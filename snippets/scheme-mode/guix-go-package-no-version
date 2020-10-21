@@ -1,0 +1,30 @@
+# -*- mode: snippet -*-
+# contributor: Ryan Prior <rprior@protonmail.com>
+# name: guix-go-package-no-version
+# key: guix-go-noversion
+# group: guix
+# --
+(define-public go-${2:$$(-> yas-text (guix-packaging--latch (yas-field-value 1)) guix-packaging--make-slug)}
+  (let ((commit "$3")
+        (revision "0"))
+    (package
+      (name "go-$2")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+         (url "https://${4:$$(guix-packaging--latch yas-text (yas-field-value 1))}")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "$5"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "$1"))
+      (home-page "https://${6:$$(guix-packaging--latch yas-text (yas-field-value 1))}")
+      (synopsis "$7")
+      (description
+       "$8")
+      (license license:${9:expat}))))
