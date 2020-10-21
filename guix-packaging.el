@@ -62,6 +62,7 @@
         "")))
 
 (defun guix-packaging--latch (current init)
+  "CURRENT unless it's nil or an empty string, in which case INIT."
   (if (or (string= "" current)
           (null current))
       init
