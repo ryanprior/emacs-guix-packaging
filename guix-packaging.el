@@ -62,12 +62,10 @@
         "")))
 
 (defun guix-packaging--latch (current init)
-  (-> current
-      (string= "")
-      (or (null current))
-      not
-      (and current)
-      (or init)))
+  (if (or (string= "" current)
+          (null current))
+      init
+    current))
 
 ;;;###autoload
 (defun guix-packaging-go-mod-to-org-checkbox (&optional depth buffer)
