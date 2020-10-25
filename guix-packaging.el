@@ -83,14 +83,17 @@
           (forward-line))))))
 
 ;;;###autoload
-(defun guix-packaging-go-mod-to-org-checkbox (&optional depth buffer)
+(defun guix-packaging-go-mod-to-checkbox (&optional depth buffer)
+  "Convert the line at point from a go module requirement to an
+org/markdown checkbox list item."
   (interactive "p")
   (with-current-buffer (or buffer (current-buffer))
     (save-excursion
       (goto-char (line-beginning-position))
       (insert (make-string (-> depth (or 1) (* 2)) ? ))
-      (insert "- [ ] ")
-      (delete-forward-char 1)
+      (insert "- [ ]")
+      (fixup-whitespace)
+      (forward-char)
       (search-forward " ")
       (delete-backward-char 1)
       (delete-forward-char 1)
