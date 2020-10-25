@@ -40,7 +40,7 @@
 
 (defgroup guix-packaging nil
   "Tools for writing and maintaining Guix packages."
-  :prefix "guix-packaging"
+  :prefix "guix-packaging-"
   :group 'guix)
 
 (defcustom guix-packaging-slug-dash-pattern (rx (any " " "_" "/" "."))
