@@ -116,6 +116,7 @@ guix-packaging-go-mod-to-checkbox."
 
 ;;;###autoload
 (defun guix-packaging--snippets-initialize ()
+  "Initialize yasnippet to use the guix-packaging snippets."
   (let ((snip-dir (expand-file-name "snippets" guix-packaging--snippets-root)))
     (when (boundp 'yas-snippet-dirs)
       (add-to-list 'yas-snippet-dirs snip-dir t))
