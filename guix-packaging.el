@@ -99,6 +99,17 @@ org/markdown checkbox list item."
       (delete-forward-char 1)
       (insert "@"))))
 
+;;;###autoload
+(defun guix-packaging-go-mod-region-to-checkboxes (&optional depth buffer)
+  "Convert all lines in the current region from go module
+requirements to org/markdown checklist items using
+guix-packaging-go-mod-to-checkbox."
+  (interactive "p")
+  (guix-packaging--do-on-each-line
+   (lambda ()
+     "Convert to checkbox with given DEPTH and BUFFER."
+     (guix-packaging-go-mod-to-checkbox depth buffer))))
+
 (setq guix-packaging--snippets-root
       (file-name-directory (or load-file-name
                                (buffer-file-name))))
