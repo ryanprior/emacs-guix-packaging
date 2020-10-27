@@ -166,6 +166,27 @@ guix-packaging-go-mod-to-checkbox."
       (end-of-line)
       `(,region-min-line-number ,(line-number-at-pos)))))
 
+;;;###autoload
+(defun guix-packaging-go-mod-to-checklist-dwim (&optional depth buffer)
+  "Convert all lines in the current region from go module
+  requirements to org/markdown checklist items using
+  guix-packaging-go-mod-to-checkbox, or if no region is selected,
+  convert the go mod block at point."
+  (interactive "p")
+  (if (use-region-p)
+      (begin (guix-packaging--go-mod-region-to-checkboxes depth buffer) (message "used region"))
+    (destructuring-bind (&optional start end) (guix-packaging--widen-go-mod buffer)
+      (when (and start end)
+        (save-mark-and-excursion
+          (guix-packaging--go-mod-region-to-checkboxes depth buffer)
+          (goto-line (- start 1))
+          (beginning-of-line)
+          (when (looking-at-p guix-packaging-go-mod-start-pattern)
+            (delete-region (point) (+ (line-end-position) 1)))
+          (goto-line (+ end 1))
+          (beginning-of-line)
+          (when (looking-at-p guix-packaging-go-mod-end-pattern)
+            (delete-region (point) (+ (min (buffer-size) (line-end-position)) 1))))))))
 
 ;;;###autoload
 (defun guix-packaging--snippets-initialize ()
