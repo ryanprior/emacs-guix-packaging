@@ -138,6 +138,34 @@ guix-packaging-go-mod-to-checkbox."
      "Convert to checkbox with given DEPTH and BUFFER."
      (guix-packaging-go-mod-to-checkbox depth buffer))))
 
+(defun guix-packaging--widen-go-mod (&optional buffer)
+  "Widen region to contain all contiguous lines which match
+  guix-packaging-go-mod-pattern."
+  (let ((start (line-number-at-pos (if (use-region-p) (region-beginning) (point))))
+        (region-min-line-number nil)
+        (in-mod-region (save-mark-and-excursion
+                         (beginning-of-line)
+                         (looking-at-p guix-packaging-go-mod-pattern)))
+        (max-point (buffer-size))
+        (buffer (or buffer (current-buffer))))
+    (when in-mod-region
+      (beginning-of-line)
+      (while (and (not (eq (point) 1))
+                  (looking-at-p guix-packaging-go-mod-pattern))
+        (previous-line))
+      (when (not (looking-at-p guix-packaging-go-mod-pattern))
+        (forward-line))
+      (setq region-min-line-number (line-number-at-pos))
+      (push-mark (point) t t)
+      (goto-line start)
+      (while (and (not (eq (point) max-point))
+                  (looking-at-p guix-packaging-go-mod-pattern))
+        (forward-line))
+      (when (not (looking-at-p guix-packaging-go-mod-pattern))
+        (previous-line))
+      (end-of-line)
+      `(,region-min-line-number ,(line-number-at-pos)))))
+
 
 ;;;###autoload
 (defun guix-packaging--snippets-initialize ()
