@@ -49,6 +49,35 @@
   :type '(regexp)
   :group 'guix-packaging)
 
+(defcustom guix-packaging-go-mod-pattern (rx line-start (* space)
+                               (+ (not space)) "/"
+                               (+ (not space)) " "
+                               (+ (not space))
+                               (* not-newline)
+                               line-end)
+  "Pattern matching a single go module requirement."
+  :type '(regexp)
+  :group 'guix-packaging)
+
+(defcustom guix-packaging-go-mod-start-pattern (rx line-start (* space)
+                                     "require" (+ space)
+                                     "(" (* space)
+                                     line-end)
+  "Pattern matching the beginning of a go module requirement block."
+  :type '(regexp)
+  :group 'guix-packaging)
+
+(defcustom guix-packaging-go-mod-end-pattern (rx line-start (* space)
+                                   ")" (* space)
+                                   line-end)
+  "Pattern matching the end of a go module requirement block."
+  :type '(regexp)
+  :group 'guix-packaging)
+
+(setq guix-packaging--snippets-root
+      (file-name-directory (or load-file-name
+                               (buffer-file-name))))
+
 (defun guix-packaging--make-slug (string)
   "Replaces whitespaces, dots, slashes & underscores in STRING
   with dashes and removes other non-alphanumeric characters to
@@ -111,9 +140,6 @@ guix-packaging-go-mod-to-checkbox."
      "Convert to checkbox with given DEPTH and BUFFER."
      (guix-packaging-go-mod-to-checkbox depth buffer))))
 
-(setq guix-packaging--snippets-root
-      (file-name-directory (or load-file-name
-                               (buffer-file-name))))
 
 ;;;###autoload
 (defun guix-packaging--snippets-initialize ()
