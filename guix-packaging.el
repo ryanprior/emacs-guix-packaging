@@ -20,7 +20,7 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this file.  If not, see <http://www.gnu.org/licenses/>.
 
-;; Package-Requires: ((emacs "27.1") (dash "2.17.0") (yasnippet "0.14.0") (cl-lib "0.6.1"))
+;; Package-Requires: ((emacs "27.1") (dash "2.17.0") (yasnippet "0.14.0") (cl-lib "0.6.1") (subr-x))
 
 ;;; Commentary:
 
