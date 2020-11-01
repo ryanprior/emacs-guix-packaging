@@ -88,6 +88,11 @@
       (file-name-directory (or load-file-name
                                (buffer-file-name))))
 
+(defun guix-packaging--message (&rest args)
+  (with-current-buffer guix-packaging-output-buffer
+    (-each args 'insert)
+    (insert "\n")))
+
 (defun guix-packaging--make-slug (string)
   "Replaces whitespaces, dots, slashes & underscores in STRING
   with dashes and removes other non-alphanumeric characters to
