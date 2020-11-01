@@ -93,9 +93,11 @@
                                (buffer-file-name))))
 
 (defun guix-packaging--message (&rest args)
-  (with-current-buffer guix-packaging-output-buffer
-    (-each args 'insert)
-    (insert "\n")))
+  (with-current-buffer (get-buffer-create guix-packaging-output-buffer)
+    (save-excursion
+      (end-of-buffer)
+      (-each args 'insert)
+      (insert "\n"))))
 
 (defun guix-packaging--make-slug (string)
   "Replaces whitespaces, dots, slashes & underscores in STRING
