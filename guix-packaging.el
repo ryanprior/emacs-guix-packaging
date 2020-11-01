@@ -244,14 +244,20 @@ guix-packaging-go-mod-to-checkbox."
                      default))
           (branch (read-string "Branch (default master): " nil nil "master")))
      (list repo-url branch)))
-  (guix-packaging--git-clone-tmp repo-url branch)
-  (->> repo-url
-       guix-packaging--tmp-repo-dir
-       (concat "guix hash -rx ")
-       shell-command-to-string
-       string-trim-right
-       kill-new
-       message))
+  (if (zerop (guix-packaging--git-clone-tmp repo-url branch))
+      (->> repo-url
+           guix-packaging--tmp-repo-dir
+           (concat "guix hash -rx ")
+           shell-command-to-string
+           string-trim-right
+           kill-new
+           message)
+    (message
+     "Couldn't hash %s at branch %s. See %s for info."
+     (propertize repo-url 'face 'link)
+     branch
+     (propertize guix-packaging-error-buffer 'face 'error))
+    nil))
 
 ;;;###autoload
 (defun guix-packaging--snippets-initialize ()
