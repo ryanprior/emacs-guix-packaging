@@ -252,11 +252,12 @@ guix-packaging-go-mod-to-checkbox."
            string-trim-right
            kill-new
            message)
-    (message
-     "Couldn't hash %s at branch %s. See %s for info."
-     (propertize repo-url 'face 'link)
-     branch
-     (propertize guix-packaging-error-buffer 'face 'error))
+    (when (called-interactively-p)
+      (message
+       "Couldn't hash %s at branch %s. See %s for info."
+       (propertize repo-url 'face 'link)
+       branch
+       (propertize guix-packaging-error-buffer 'face 'error)))
     nil))
 
 ;;;###autoload
