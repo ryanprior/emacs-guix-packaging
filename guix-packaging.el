@@ -20,7 +20,7 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this file.  If not, see <http://www.gnu.org/licenses/>.
 
-;; Package-Requires: ((emacs "27.1") (dash "2.17.0") (yasnippet "0.14.0") (cl-lib "0.6.1") (subr-x))
+;; Package-Requires: ((emacs "27.1") (cl-lib "0.6.1") (dash "2.17.0") (files) (rx) (simple) (subr-x) (thingatpt) (yasnippet "0.14.0"))
 
 ;;; Commentary:
 
@@ -29,10 +29,14 @@
 
 ;;; Code:
 
-(require 'yasnippet)
-(require 'dash)
-(require 'rx)
 (require 'cl-lib)
+(require 'dash)
+(require 'files)
+(require 'rx)
+(require 'simple)
+(require 'subr-x)
+(require 'thingatpt)
+(require 'yasnippet)
 
 (defgroup guix nil
   "Interface for the GNU Guix package manager."
