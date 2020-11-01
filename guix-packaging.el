@@ -225,6 +225,29 @@ guix-packaging-go-mod-to-checkbox."
                    guix-packaging-error-buffer)))
 
 ;;;###autoload
+(defun guix-packaging-hash-git (&optional repo-url branch)
+  "Save the hash of the git repository at REPO-URL to the kill
+  ring. If BRANCH provided, git uses that branch (or tag.)"
+  (interactive
+   (let* ((default (thing-at-point 'url))
+          (repo-url (read-string
+                     (concat "Repository URL"
+                             (when default (concat " (default " default ")") )
+                             ": ")
+                     nil nil
+                     default))
+          (branch (read-string "Branch (default master): " nil nil "master")))
+     (list repo-url branch)))
+  (guix-packaging--git-clone-tmp repo-url branch)
+  (->> repo-url
+       guix-packaging--tmp-repo-dir
+       (concat "guix hash -rx ")
+       shell-command-to-string
+       string-trim-right
+       kill-new
+       message))
+
+;;;###autoload
 (defun guix-packaging--snippets-initialize ()
   "Initialize yasnippet to use the guix-packaging snippets."
   (let ((snip-dir (expand-file-name "snippets" guix-packaging--snippets-root)))
