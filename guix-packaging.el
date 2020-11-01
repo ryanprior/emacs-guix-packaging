@@ -203,6 +203,27 @@ guix-packaging-go-mod-to-checkbox."
           (when (looking-at-p guix-packaging-go-mod-end-pattern)
             (delete-region (point) (+ (min (buffer-size) (line-end-position)) 1))))))))
 
+(defun guix-packaging--tmp-repo-dir (repo-url)
+  "The name of a temporary directory for REPO-URL."
+  (concat "/tmp/" (guix-packaging--make-slug repo-url)))
+
+(defun guix-packaging--git-clone-tmp (repo-url &optional branch)
+  "Clone the git repository with the provided REPO-URL to a temporary directory."
+  (let* ((shell-command-dont-erase-buffer t)
+         (branch-options (when branch (concat "--branch \"" branch "\" ")))
+         (dest (guix-packaging--tmp-repo-dir repo-url))
+         (cmd (concat "git clone --depth=1 "
+                      branch-options
+                      repo-url
+                      " " dest)))
+    (when (file-directory-p dest)
+      (guix-packaging--message "Removing existing " dest)
+      (delete-directory dest t))
+    (guix-packaging--message "$ " cmd)
+    (shell-command cmd
+                   guix-packaging-output-buffer
+                   guix-packaging-error-buffer)))
+
 ;;;###autoload
 (defun guix-packaging--snippets-initialize ()
   "Initialize yasnippet to use the guix-packaging snippets."
