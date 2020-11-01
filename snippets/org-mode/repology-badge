@@ -4,4 +4,4 @@
 # key: guix-badge
 # group: guix
 # --
-<a href="https://repology.org/project/$1/versions"><img src="https://repology.org/badge/version-for-repo/gnuguix/$1.svg" alt="GNU Guix package for $1"></a>
+<a href="https://repology.org/tools/project-by?repo=gnuguix&name_type=binname&target_page=project_versions&name=$1"><img src="https://repology.org/tools/project-by?repo=gnuguix&name_type=binname&target_page=badge_version_for_repo&name=$1" alt="GNU Guix package for $1"></a>
