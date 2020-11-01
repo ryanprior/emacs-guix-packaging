@@ -44,6 +44,16 @@
   :prefix "guix-packaging-"
   :group 'guix)
 
+(defcustom guix-packaging-output-buffer "*guix-packaging*"
+  "Buffer for the output of packaging commands."
+  :type '(string)
+  :group 'guix-packaging)
+
+(defcustom guix-packaging-error-buffer "*guix-packaging*"
+  "Buffer for the error messages of packaging commands."
+  :type '(string)
+  :group 'guix-packaging)
+
 (defcustom guix-packaging-slug-dash-pattern (rx (any " " "_" "/" "."))
   "Pattern matching characters to replace with dashes in a slug."
   :type '(regexp)
