@@ -112,12 +112,12 @@
         (rx (not (any alphanumeric "-")))
         "")))
 
-(defun guix-packaging--latch (current init)
+(defmacro guix-packaging--latch (current init)
   "CURRENT unless it's nil or an empty string, in which case INIT."
-  (if (or (string= "" current)
-          (null current))
-      init
-    current))
+  `(if (or (string= "" ,current)
+           (null ,current))
+       ,init
+     ,current))
 
 (defun guix-packaging--do-on-each-line (func &optional start end buffer)
   "Move point to each line between START and END (or current
