@@ -4,6 +4,9 @@
 
 ;; Author: Ryan Prior <rprior@protonmail.com>
 ;; Keywords: guix tools snippets
+;; Version: 1.0
+;; Homepage: https://github.com/ryanprior/emacs-guix-packaging
+;; Package-Requires: ((emacs "27.1") (dash "2.17.0") (yasnippet "0.14.0"))
 
 ;; This file is not part of GNU Emacs.
 
@@ -19,8 +22,6 @@
 
 ;; You should have received a copy of the GNU General Public License
 ;; along with this file.  If not, see <http://www.gnu.org/licenses/>.
-
-;; Package-Requires: ((emacs "27.1") (cl-lib "0.6.1") (dash "2.17.0") (files) (rx) (simple) (subr-x) (thingatpt) (yasnippet "0.14.0"))
 
 ;;; Commentary:
 
