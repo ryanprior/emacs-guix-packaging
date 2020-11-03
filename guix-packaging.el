@@ -1,4 +1,4 @@
-;;; guix-packaging.el --- Tools for writing and maintaining Guix packages
+;;; guix-packaging.el --- Tools for writing and maintaining Guix packages -*- lexical-binding: t; -*-
 
 ;; Copyright © 2020 Ryan Prior
 
