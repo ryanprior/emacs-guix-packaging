@@ -25,8 +25,31 @@
 
 ;;; Commentary:
 
-;; emacs-guix-packaging (aka "guix-packaging.el") provides tools to
-;; create and maintain Guix packages quickly and with confidence.
+;; guix-packaging (aka "guix-packaging.el") provides tools to create and
+;; maintain Guix packages quickly and with confidence.
+
+;; Commands:
+
+;; M-x guix-packaging-go-mod-to-checklist-dwim turns go module definitions into an org/markdown
+;; checklist, suitable to keep track of your packaging progress.
+
+;; M-x guix-packaging-hash-git gives the Guix hash for a git repository URL (the one at point
+;; by default) at a given tag.
+
+;; Snippets:
+
+;; In scheme-mode, the guix-go snippet creates the skeleton of a go module
+;; package and assists you in quickly filling it out. You first provide the
+;; import path, from which the snippet infers the symbol & package names, the
+;; repo URL, the hash, and the homepage. All of these are presented in the
+;; snippet as default values that you can change as you go for unusual cases.
+
+;; The guix-go-noversion snippet is similar but instead provides a package
+;; skeleton suitable for those modules which don't have any releases.
+
+;; In sgml, web, markdown, and org modes, the guix-badge snippet inserts the
+;; HTML for a Repology badge showing the package status in Guix and linking to
+;; the project page in Repology, handy for project status pages.
 
 ;;; Code:
 
