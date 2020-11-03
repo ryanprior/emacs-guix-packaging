@@ -117,16 +117,18 @@
                                (buffer-file-name))))
 
 (defun guix-packaging--message (&rest args)
+  "Insert ARGS into the `guix-packaging-output-buffer'."
   (with-current-buffer (get-buffer-create guix-packaging-output-buffer)
     (save-excursion
       (end-of-buffer)
-      (-each args 'insert)
+      (-each args #'insert)
       (insert "\n"))))
 
 (defun guix-packaging--make-slug (string)
-  "Replaces whitespaces, dots, slashes & underscores in STRING
-  with dashes and removes other non-alphanumeric characters to
-  make a slug suitable as a bland lisp or scheme symbol."
+  "Make a slug out of STRING.
+Replaces whitespaces, dots, slashes & underscores in STRING with
+dashes and removes other non-alphanumeric characters to make a
+slug suitable as a bland Lisp or scheme symbol."
   (->> string
        downcase
        (replace-regexp-in-string
@@ -144,8 +146,9 @@
      ,current))
 
 (defun guix-packaging--do-on-each-line (func &optional start end buffer)
-  "Move point to each line between START and END (or current
-  selected region) and run FUNC."
+  "Run a command on each line.
+Move point to each line between START and END (or current
+selected region) and run FUNC each time."
   (let ((start (line-number-at-pos (or start (region-beginning))))
         (end (line-number-at-pos (or end (region-end))))
         (buffer (or buffer (current-buffer))))
@@ -158,34 +161,36 @@
           (forward-line))))))
 
 ;;;###autoload
-(defun guix-packaging-go-mod-to-checkbox (&optional depth buffer)
-  "Convert the line at point from a go module requirement to an
-org/markdown checkbox list item."
+(defun guix-packaging-go-mod-to-checkbox (&optional depth)
+  "Convert a go module requirement to a checkbox.
+Prepend 2 times DEPTH spaces, make a list item with a checkbox,
+and use the go module requirement as the label."
   (interactive "p")
-  (with-current-buffer (or buffer (current-buffer))
-    (save-excursion
-      (goto-char (line-beginning-position))
-      (insert (make-string (-> depth (or 1) (* 2)) ? ))
-      (insert "- [ ]")
-      (fixup-whitespace)
-      (forward-char)
-      (search-forward " ")
-      (delete-backward-char 1)
-      (delete-forward-char 1)
-      (insert "@"))))
+  (save-excursion
+    (goto-char (line-beginning-position))
+    (insert (make-string (-> depth (or 1) (* 2)) ? ))
+    (insert "- [ ]")
+    (fixup-whitespace)
+    (forward-char)
+    (search-forward " ")
+    (delete-backward-char 1)
+    (delete-forward-char 1)
+    (insert "@")))
 
 (defun guix-packaging--go-mod-region-to-checkboxes (&optional depth buffer)
-  "Convert all lines in the current region from go module
-requirements to org/markdown checklist items using
-guix-packaging-go-mod-to-checkbox."
+  "Convert the region from go module requirements a checklist.
+Prepend 2 times DEPTH spaces before each list element. Use the
+region from BUFFER."
   (guix-packaging--do-on-each-line
    (lambda ()
      "Convert to checkbox with given DEPTH and BUFFER."
      (guix-packaging-go-mod-to-checkbox depth buffer))))
 
 (defun guix-packaging--widen-go-mod (&optional buffer)
-  "Widen region to contain all contiguous lines which match
-  guix-packaging-go-mod-pattern."
+  "Widen region to contain all go module requirements.
+Use the current region in BUFFER or look around point in the
+current buffer. Use `guix-packaging-go-mod-pattern' to identify
+target lines."
   (let ((start (line-number-at-pos (if (use-region-p) (region-beginning) (point))))
         (region-min-line-number nil)
         (in-mod-region (save-mark-and-excursion
@@ -213,10 +218,10 @@ guix-packaging-go-mod-to-checkbox."
 
 ;;;###autoload
 (defun guix-packaging-go-mod-to-checklist-dwim (&optional depth buffer)
-  "Convert all lines in the current region from go module
-  requirements to org/markdown checklist items using
-  guix-packaging-go-mod-to-checkbox, or if no region is selected,
-  convert the go mod block at point."
+  "Convert the region of go module requirements to a checklist.
+Prepend 2 times DEPTH spaces before each list item. Use the
+region from BUFFER, or if no region is selected, widen to the go
+mod block at point."
   (interactive "p")
   (if (use-region-p)
       (begin (guix-packaging--go-mod-region-to-checkboxes depth buffer) (message "used region"))
@@ -238,7 +243,7 @@ guix-packaging-go-mod-to-checkbox."
   (concat "/tmp/" (guix-packaging--make-slug repo-url)))
 
 (defun guix-packaging--git-clone-tmp (repo-url &optional branch)
-  "Clone the git repository with the provided REPO-URL to a temporary directory."
+  "Clone the git repository with the provided REPO-URL and BRANCH to a temporary directory."
   (let* ((shell-command-dont-erase-buffer t)
          (branch-options (when branch (concat "--branch \"" branch "\" ")))
          (dest (guix-packaging--tmp-repo-dir repo-url))
@@ -256,8 +261,8 @@ guix-packaging-go-mod-to-checkbox."
 
 ;;;###autoload
 (defun guix-packaging-hash-git (&optional repo-url branch)
-  "Save the hash of the git repository at REPO-URL to the kill
-  ring. If BRANCH provided, git uses that branch (or tag.)"
+  "Save the hash of the git repository at REPO-URL to the kill ring.
+If BRANCH provided, git uses that branch (or tag.)"
   (interactive
    (let* ((default (thing-at-point 'url))
           (repo-url (read-string
@@ -288,7 +293,7 @@ guix-packaging-go-mod-to-checkbox."
 (defun guix-packaging--snippets-initialize ()
   "Initialize yasnippet to use the guix-packaging snippets."
   (let ((snip-dir (expand-file-name "snippets" guix-packaging--snippets-root)))
-    (when (boundp 'yas-snippet-dirs)
+    (when (boundp #'yas-snippet-dirs)
       (add-to-list 'yas-snippet-dirs snip-dir t))
     (yas-load-directory snip-dir)))
 
