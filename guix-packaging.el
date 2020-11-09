@@ -242,6 +242,16 @@ selected region) and run FUNC each time."
         (scheme-mode)
         (thing-at-point 'symbol t))))
 
+(defun guix-packaging--format-input (package-string)
+  "Format PACKAGE-STRING as a Guix package input."
+  (format "(\"%s\" ,%s)" package-string (guix-packaging--guile-symbol package-string)))
+
+(defun guix-packaging--make-package-string (package)
+  "The package-string (name@version) for PACKAGE."
+  (format "%s@%s"
+          (plist-get package :name)
+          (plist-get package :version)))
+
 ;;;###autoload
 (defun guix-packaging-go-mod-to-checkbox (&optional depth)
   "Convert a go module requirement to a checkbox.
