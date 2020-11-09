@@ -253,6 +253,20 @@ selected region) and run FUNC each time."
           (plist-get package :version)))
 
 ;;;###autoload
+(defun guix-packaging-insert-input (package-string)
+  (interactive
+   (let ((default (thing-at-point 'symbol))
+         (package-string
+          (completing-read "Search packages: "
+                           (completion-table-dynamic
+                            (lambda (query)
+                              "Get names of packages that match STRING."
+                              (map 'list #'guix-packaging--make-package-string
+                                   (guix-packaging--list-available query)))))))
+     (list package-string)))
+  (insert (guix-packaging--format-input package-string)))
+
+;;;###autoload
 (defun guix-packaging-go-mod-to-checkbox (&optional depth)
   "Convert a go module requirement to a checkbox.
 Prepend 2 times DEPTH spaces, make a list item with a checkbox,
