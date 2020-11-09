@@ -222,6 +222,26 @@ selected region) and run FUNC each time."
        shell-command-to-string
        guix-packaging--rec-to-plist))
 
+(defun guix-packaging--guile-symbol (package-string)
+  "The Guile symbol for PACKAGE-STRING."
+  (let* ((package-location (->> package-string
+                               (format "VISUAL=echo guix edit %s")
+                               shell-command-to-string))
+         (data-pair (split-string package-location))
+         (line (-> data-pair
+                   first
+                   (string-trim "+")
+                   string-to-number))
+         (file-path (second data-pair)))
+      (with-current-buffer (get-buffer-create "*pkg*")
+        (erase-buffer)
+        (insert-file-contents file-path)
+        (goto-line line (current-buffer))
+        (search-backward "define-public")
+        (end-of-line)
+        (scheme-mode)
+        (thing-at-point 'symbol t))))
+
 ;;;###autoload
 (defun guix-packaging-go-mod-to-checkbox (&optional depth)
   "Convert a go module requirement to a checkbox.
