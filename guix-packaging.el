@@ -225,7 +225,7 @@ selected region) and run FUNC each time."
 (defun guix-packaging--guile-symbol (package-string)
   "The Guile symbol for PACKAGE-STRING."
   (let* ((package-location (->> package-string
-                               (format "VISUAL=echo guix edit %s")
+                               (format "VISUAL=echo %s edit %s" guix-packaging-guix-executable)
                                shell-command-to-string))
          (data-pair (split-string package-location))
          (line (-> data-pair
@@ -393,7 +393,7 @@ If BRANCH provided, git uses that branch (or tag.)"
   (if (zerop (guix-packaging--git-clone-tmp repo-url branch))
       (->> repo-url
            guix-packaging--tmp-repo-dir
-           (concat "guix hash -rx ")
+           (format "%s hash -rx %s" guix-packaging-guix-executable)
            shell-command-to-string
            string-trim-right
            kill-new
