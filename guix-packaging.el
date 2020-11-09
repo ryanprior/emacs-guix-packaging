@@ -215,6 +215,13 @@ selected region) and run FUNC each time."
     (plist-put fields :dependencies
                dependencies)))
 
+(defun guix-packaging--package (name)
+  "Info about the package NAME in a plist."
+  (--> "%s show %s"
+       (format it guix-packaging-guix-executable name)
+       shell-command-to-string
+       guix-packaging--rec-to-plist))
+
 ;;;###autoload
 (defun guix-packaging-go-mod-to-checkbox (&optional depth)
   "Convert a go module requirement to a checkbox.
