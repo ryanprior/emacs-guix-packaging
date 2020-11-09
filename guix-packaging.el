@@ -157,20 +157,20 @@ slug suitable as a bland Lisp or scheme symbol."
        ,init
      ,current))
 
-(defun guix-packaging--do-on-each-line (func &optional start end buffer)
+(defun guix-packaging--do-on-each-line (func &optional start end)
   "Run a command on each line.
 Move point to each line between START and END (or current
 selected region) and run FUNC each time."
-  (let ((start (line-number-at-pos (or start (region-beginning))))
-        (end (line-number-at-pos (or end (region-end))))
-        (buffer (or buffer (current-buffer))))
-    (with-current-buffer buffer
-      (save-mark-and-excursion
-        (set-mark nil)
-        (goto-line start)
-        (while (<= (line-number-at-pos) end)
-          (funcall func)
-          (forward-line))))))
+  (let ((start (line-number-at-pos (or start
+                                       (region-beginning))))
+        (end (line-number-at-pos (or end
+                                     (region-end)))))
+    (save-mark-and-excursion
+      (set-mark nil)
+      (goto-line start)
+      (while (<= (line-number-at-pos) end)
+        (funcall func)
+        (forward-line)))))
 
 ;;;###autoload
 (defun guix-packaging-go-mod-to-checkbox (&optional depth)
