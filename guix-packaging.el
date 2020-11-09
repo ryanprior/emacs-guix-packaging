@@ -183,6 +183,18 @@ selected region) and run FUNC each time."
             :outputs ,outputs
             :location ,location)))
 
+(defun guix-packaging--map-tsv-to-plist (package-strings)
+  "Transform tsv PACKAGE-STRINGS to plists."
+  (map 'list #'guix-packaging--tsv-to-plist package-strings))
+
+(defun guix-packaging--list-available (search-regex)
+  "Available packages in Guix matching SEARCH-REGEX, in a plist."
+  (-> "%s package -A %s"
+      (format guix-packaging-guix-executable search-regex)
+      shell-command-to-string
+      (split-string "\n" t)
+      guix-packaging--map-tsv-to-plist))
+
 ;;;###autoload
 (defun guix-packaging-go-mod-to-checkbox (&optional depth)
   "Convert a go module requirement to a checkbox.
