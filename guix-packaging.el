@@ -172,6 +172,17 @@ selected region) and run FUNC each time."
         (funcall func)
         (forward-line)))))
 
+(defun guix-packaging--tsv-to-plist (tsv-string)
+  "Transform a TSV-STRING for a package into a plist."
+  (let* ((fields (split-string tsv-string "\t"))
+         (outputs (split-string (nth 2 fields) ","))
+         (location (-zip '(:file :line :char)
+                         (split-string (nth 3 fields) ":"))))
+    `(:name ,(nth 0 fields)
+            :version ,(nth 1 fields)
+            :outputs ,outputs
+            :location ,location)))
+
 ;;;###autoload
 (defun guix-packaging-go-mod-to-checkbox (&optional depth)
   "Convert a go module requirement to a checkbox.
