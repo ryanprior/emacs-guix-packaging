@@ -195,6 +195,26 @@ selected region) and run FUNC each time."
       (split-string "\n" t)
       guix-packaging--map-tsv-to-plist))
 
+(defun guix-packaging--add-rec-field (plist pair)
+  "Add record PAIR to PLIST."
+  (plist-put plist
+             (intern (concat ":" (first pair)))
+             (second pair)))
+
+(defun guix-packaging--rec-to-plist (rec-string)
+  "Transfrom a REC-STRING for a package into a plist."
+  (let* ((reduced-string (replace-regexp-in-string "\n[+]" " " rec-string))
+         (fields (--> reduced-string
+                      (split-string it "\n")
+                      (remove-if #'string-empty-p it)
+                      (map 'list (-rpartial #'split-string ": ") it)
+                      (reduce #'guix-packaging--add-rec-field
+                              it
+                              :initial-value '())))
+         (dependencies (split-string (plist-get fields :dependencies))))
+    (plist-put fields :dependencies
+               dependencies)))
+
 ;;;###autoload
 (defun guix-packaging-go-mod-to-checkbox (&optional depth)
   "Convert a go module requirement to a checkbox.
