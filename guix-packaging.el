@@ -80,6 +80,11 @@
   :type '(string)
   :group 'guix-packaging)
 
+(defcustom guix-packaging-guix-executable "~/.config/guix/current/bin/guix"
+  "The executable of guix."
+  :type '((file :must-match t))
+  :group 'guix-packaging)
+
 (defcustom guix-packaging-slug-dash-pattern (rx (any " " "_" "/" "."))
   "Pattern matching characters to replace with dashes in a slug."
   :type '(regexp)
