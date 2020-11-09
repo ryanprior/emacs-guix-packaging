@@ -62,13 +62,11 @@
 (require 'thingatpt)
 (require 'yasnippet)
 
-(defgroup guix nil
-  "Interface for the GNU Guix package manager."
+(defgroup guix nil "Interface for the GNU Guix package manager."
   :prefix "guix-"
   :group 'external)
 
-(defgroup guix-packaging nil
-  "Tools for writing and maintaining Guix packages."
+(defgroup guix-packaging nil "Tools for writing and maintaining Guix packages."
   :prefix "guix-packaging-"
   :group 'guix)
 
@@ -87,27 +85,38 @@
   :type '(regexp)
   :group 'guix-packaging)
 
-(defcustom guix-packaging-go-mod-pattern (rx line-start (* space)
-                               (+ (not space)) "/"
-                               (+ (not space)) " "
-                               (+ (not space))
-                               (* not-newline)
-                               line-end)
+(defcustom guix-packaging-go-mod-pattern
+  (rx line-start
+      (* space)
+      (+ (not space))
+      "/"
+      (+ (not space))
+      " "
+      (+ (not space))
+      (* not-newline)
+      line-end)
   "Pattern matching a single go module requirement."
   :type '(regexp)
   :group 'guix-packaging)
 
-(defcustom guix-packaging-go-mod-start-pattern (rx line-start (* space)
-                                     "require" (+ space)
-                                     "(" (* space)
-                                     line-end)
+(defcustom guix-packaging-go-mod-start-pattern
+  (rx line-start
+      (* space)
+      "require"
+      (+ space)
+      "("
+      (* space)
+      line-end)
   "Pattern matching the beginning of a go module requirement block."
   :type '(regexp)
   :group 'guix-packaging)
 
-(defcustom guix-packaging-go-mod-end-pattern (rx line-start (* space)
-                                   ")" (* space)
-                                   line-end)
+(defcustom guix-packaging-go-mod-end-pattern
+  (rx line-start
+      (* space)
+      ")"
+      (* space)
+      line-end)
   "Pattern matching the end of a go module requirement block."
   :type '(regexp)
   :group 'guix-packaging)
@@ -131,12 +140,10 @@ dashes and removes other non-alphanumeric characters to make a
 slug suitable as a bland Lisp or scheme symbol."
   (->> string
        downcase
-       (replace-regexp-in-string
-        (rx (+ (regexp guix-packaging-slug-dash-pattern)))
-        "-")
-       (replace-regexp-in-string
-        (rx (not (any alphanumeric "-")))
-        "")))
+       (replace-regexp-in-string (rx (+ (regexp guix-packaging-slug-dash-pattern)))
+                                 "-")
+       (replace-regexp-in-string (rx (not (any alphanumeric "-")))
+                                 "")))
 
 (defmacro guix-packaging--latch (current init)
   "CURRENT unless it's nil or an empty string, in which case INIT."
@@ -168,7 +175,10 @@ and use the go module requirement as the label."
   (interactive "p")
   (save-excursion
     (goto-char (line-beginning-position))
-    (insert (make-string (-> depth (or 1) (* 2)) ? ))
+    (insert (-> depth
+                (or 1)
+                (* 2)
+                (make-string ? )))
     (insert "- [ ]")
     (fixup-whitespace)
     (forward-char)
@@ -186,18 +196,21 @@ region from BUFFER."
      "Convert to checkbox with given DEPTH and BUFFER."
      (guix-packaging-go-mod-to-checkbox depth buffer))))
 
-(defun guix-packaging--widen-go-mod (&optional buffer)
-  "Widen region to contain all go module requirements.
+(defun guix-packaging--mark-go-mod (&optional buffer)
+  "Mark go module requirements.
 Use the current region in BUFFER or look around point in the
 current buffer. Use `guix-packaging-go-mod-pattern' to identify
 target lines."
-  (let ((start (line-number-at-pos (if (use-region-p) (region-beginning) (point))))
+  (let ((start (line-number-at-pos (if (use-region-p)
+                                       (region-beginning)
+                                     (point))))
         (region-min-line-number nil)
         (in-mod-region (save-mark-and-excursion
                          (beginning-of-line)
                          (looking-at-p guix-packaging-go-mod-pattern)))
         (max-point (buffer-size))
-        (buffer (or buffer (current-buffer))))
+        (buffer (or buffer
+                    (current-buffer))))
     (when in-mod-region
       (beginning-of-line)
       (while (and (not (eq (point) 1))
@@ -224,39 +237,44 @@ region from BUFFER, or if no region is selected, widen to the go
 mod block at point."
   (interactive "p")
   (if (use-region-p)
-      (begin (guix-packaging--go-mod-region-to-checkboxes depth buffer) (message "used region"))
-    (destructuring-bind (&optional start end) (guix-packaging--widen-go-mod buffer)
+      (guix-packaging--go-mod-region-to-checkboxes depth buffer)
+    (destructuring-bind (&optional start end)
+        (guix-packaging--widen-go-mod buffer)
       (when (and start end)
         (save-mark-and-excursion
-          (guix-packaging--go-mod-region-to-checkboxes depth buffer)
+          (guix-packaging--go-mod-region-to-checkboxes
+           depth buffer)
           (goto-line (- start 1))
           (beginning-of-line)
           (when (looking-at-p guix-packaging-go-mod-start-pattern)
-            (delete-region (point) (+ (line-end-position) 1)))
-          (goto-line (+ end 1))
+            (delete-region (point)
+                           (1+ (line-end-position))))
+          (goto-line (1+ end))
           (beginning-of-line)
           (when (looking-at-p guix-packaging-go-mod-end-pattern)
-            (delete-region (point) (+ (min (buffer-size) (line-end-position)) 1))))))))
+            (delete-region (point)
+                           (1+ (min (buffer-size)
+                                    (line-end-position))))))))))
 
 (defun guix-packaging--tmp-repo-dir (repo-url)
   "The name of a temporary directory for REPO-URL."
-  (concat "/tmp/" (guix-packaging--make-slug repo-url)))
+  (format "/tmp/%s" (guix-packaging--make-slug repo-url)))
 
 (defun guix-packaging--git-clone-tmp (repo-url &optional branch)
   "Clone the git repository with the provided REPO-URL and BRANCH to a temporary directory."
   (let* ((shell-command-dont-erase-buffer t)
-         (branch-options (when branch (concat "--branch \"" branch "\" ")))
+         (branch-options (when branch
+                           (format "--branch \"%s\" " branch)))
          (dest (guix-packaging--tmp-repo-dir repo-url))
-         (cmd (concat "git clone --depth=1 "
+         (cmd (format "git clone --depth=1 %s%s %s"
                       branch-options
                       repo-url
-                      " " dest)))
+                      dest)))
     (when (file-directory-p dest)
       (guix-packaging--message "Removing existing " dest)
       (delete-directory dest t))
     (guix-packaging--message "$ " cmd)
-    (shell-command cmd
-                   guix-packaging-output-buffer
+    (shell-command cmd guix-packaging-output-buffer
                    guix-packaging-error-buffer)))
 
 ;;;###autoload
@@ -265,13 +283,13 @@ mod block at point."
 If BRANCH provided, git uses that branch (or tag.)"
   (interactive
    (let* ((default (thing-at-point 'url))
-          (repo-url (read-string
-                     (concat "Repository URL"
-                             (when default (concat " (default " default ")") )
-                             ": ")
-                     nil nil
-                     default))
-          (branch (read-string "Branch (default master): " nil nil "master")))
+          (repo-url (read-string (concat "Repository URL"
+                                         (when default
+                                           (concat " (default " default ")"))
+                                         ": ")
+                                 nil nil default))
+          (branch (read-string "Branch (default master): "
+                               nil nil "master")))
      (list repo-url branch)))
   (if (zerop (guix-packaging--git-clone-tmp repo-url branch))
       (->> repo-url
@@ -282,11 +300,11 @@ If BRANCH provided, git uses that branch (or tag.)"
            kill-new
            message)
     (when (called-interactively-p)
-      (message
-       "Couldn't hash %s at branch %s. See %s for info."
-       (propertize repo-url 'face 'link)
-       branch
-       (propertize guix-packaging-error-buffer 'face 'error)))
+      (message "Couldn't hash %s at branch %s. See %s for info."
+               (propertize repo-url 'face 'link)
+               branch
+               (propertize guix-packaging-error-buffer 'face
+                           'error)))
     nil))
 
 ;;;###autoload
@@ -298,7 +316,8 @@ If BRANCH provided, git uses that branch (or tag.)"
     (yas-load-directory snip-dir)))
 
 ;;;###autoload
-(with-eval-after-load "yasnippet" (guix-packaging--snippets-initialize))
+(with-eval-after-load "yasnippet"
+  (guix-packaging--snippets-initialize))
 
 (provide 'guix-packaging)
 
