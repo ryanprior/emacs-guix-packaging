@@ -126,9 +126,10 @@
   :type '(regexp)
   :group 'guix-packaging)
 
-(setq guix-packaging--snippets-root
-      (file-name-directory (or load-file-name
-                               (buffer-file-name))))
+(defconst guix-packaging--snippets-root
+  (file-name-directory (or load-file-name
+                           (buffer-file-name)))
+  "Directory where guix-packaging snippets reside.")
 
 (defun guix-packaging--message (&rest args)
   "Insert ARGS into the `guix-packaging-output-buffer'."
