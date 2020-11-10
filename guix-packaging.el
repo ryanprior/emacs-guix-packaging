@@ -28,28 +28,64 @@
 ;; guix-packaging (aka "guix-packaging.el") provides tools to create and
 ;; maintain Guix packages quickly and with confidence.
 
-;; Commands:
 
-;; M-x guix-packaging-go-mod-to-checklist-dwim turns go module definitions into an org/markdown
-;; checklist, suitable to keep track of your packaging progress.
+;; Commands
+;; ════════
 
-;; M-x guix-packaging-hash-git gives the Guix hash for a git repository URL (the one at point
-;; by default) at a given tag.
+;; `M-x' `guix-packaging-insert-input'
+;; ───────────────────────────────────
 
-;; Snippets:
+;;   Prompts for a package string with completion, for example
+;;   `ruby@2.7.2', and inserts the corresponding Guix input form such as
+;;   `("ruby@2.7.2" ,ruby-2.7)'. It reads the Guile source code to find the
+;;   appropriate symbol name, so it might not work with some packages that
+;;   have unusual source code.
 
-;; In scheme-mode, the guix-go snippet creates the skeleton of a go module
-;; package and assists you in quickly filling it out. You first provide the
-;; import path, from which the snippet infers the symbol & package names, the
-;; repo URL, the hash, and the homepage. All of these are presented in the
-;; snippet as default values that you can change as you go for unusual cases.
 
-;; The guix-go-noversion snippet is similar but instead provides a package
-;; skeleton suitable for those modules which don't have any releases.
+;; `M-x' `guix-packaging-hash-git'
+;; ───────────────────────────────
 
-;; In sgml, web, markdown, and org modes, the guix-badge snippet inserts the
-;; HTML for a Repology badge showing the package status in Guix and linking to
-;; the project page in Repology, handy for project status pages.
+;;   Saves the Guix hash to the kill ring for a git repository URL (the one
+;;   at point by default) at a given tag.
+
+
+;; `M-x' `guix-packaging-go-mod-to-checklist-dwim'
+;; ───────────────────────────────────────────────
+
+;;   Turns go module definitions into an org/markdown checklist, suitable
+;;   to keep track of packaging progress.
+
+
+;; `M-x' `guix-packaging-go-mod-to-checkbox'
+;; ─────────────────────────────────────────
+
+;;   Replace a single go module definition with a checkbox.
+
+
+;; Snippets
+;; ════════
+
+;; scheme mode
+;; ───────────
+
+;;   The `guix-go' snippet creates the skeleton of a go module package and
+;;   assists you in quickly filling it out. You first provide the import
+;;   path, from which the snippet infers the symbol & package names, the
+;;   repo URL, the hash, and the homepage. All of these are presented in
+;;   the snippet as default values that you can change as you go for
+;;   unusual cases.
+
+;;   The `guix-go-noversion' snippet is similar but instead provides a
+;;   package skeleton suitable for those modules which don't have any
+;;   releases.
+
+
+;; sgml, web, markdown, and org modes
+;; ──────────────────────────────────
+
+;;   The `guix-badge' snippet inserts the HTML for a Repology badge showing
+;;   the package status in Guix and linking to the project page in
+;;   Repology, handy for project status pages.
 
 ;;; Code:
 
