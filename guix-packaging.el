@@ -289,14 +289,13 @@ and use the go module requirement as the label."
     (delete-forward-char 1)
     (insert "@")))
 
-(defun guix-packaging--go-mod-region-to-checkboxes (&optional depth buffer)
+(defun guix-packaging--go-mod-region-to-checkboxes (&optional depth)
   "Convert the region from go module requirements a checklist.
-Prepend 2 times DEPTH spaces before each list element. Use the
-region from BUFFER."
+Prepend 2 times DEPTH spaces before each list element."
   (guix-packaging--do-on-each-line
    (lambda ()
      "Convert to checkbox with given DEPTH and BUFFER."
-     (guix-packaging-go-mod-to-checkbox depth buffer))))
+     (guix-packaging-go-mod-to-checkbox depth))))
 
 (defun guix-packaging--mark-go-mod (&optional buffer)
   "Mark go module requirements.
@@ -339,24 +338,24 @@ region from BUFFER, or if no region is selected, widen to the go
 mod block at point."
   (interactive "p")
   (if (use-region-p)
-      (guix-packaging--go-mod-region-to-checkboxes depth buffer)
+      (guix-packaging--go-mod-region-to-checkboxes depth)
     (destructuring-bind (&optional start end)
-        (guix-packaging--widen-go-mod buffer)
+        (guix-packaging--mark-go-mod buffer)
       (when (and start end)
-        (save-mark-and-excursion
-          (guix-packaging--go-mod-region-to-checkboxes
-           depth buffer)
-          (goto-line (- start 1))
-          (beginning-of-line)
-          (when (looking-at-p guix-packaging-go-mod-start-pattern)
-            (delete-region (point)
-                           (1+ (line-end-position))))
-          (goto-line (1+ end))
-          (beginning-of-line)
-          (when (looking-at-p guix-packaging-go-mod-end-pattern)
-            (delete-region (point)
-                           (1+ (min (buffer-size)
-                                    (line-end-position))))))))))
+        (with-current-buffer (or buffer (current-buffer))
+          (save-mark-and-excursion
+            (guix-packaging--go-mod-region-to-checkboxes depth)
+            (goto-line (- start 1))
+            (beginning-of-line)
+            (when (looking-at-p guix-packaging-go-mod-start-pattern)
+              (delete-region (point)
+                             (1+ (line-end-position))))
+            (goto-line (1+ end))
+            (beginning-of-line)
+            (when (looking-at-p guix-packaging-go-mod-end-pattern)
+              (delete-region (point)
+                             (1+ (min (buffer-size)
+                                      (line-end-position)))))))))))
 
 (defun guix-packaging--tmp-repo-dir (repo-url)
   "The name of a temporary directory for REPO-URL."
