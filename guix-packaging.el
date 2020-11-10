@@ -255,6 +255,8 @@ selected region) and run FUNC each time."
 
 ;;;###autoload
 (defun guix-packaging-insert-input (package-string)
+  "Insert the corresponding Guix package input for PACKAGE-STRING.
+eg. for ruby@2.7.2 insert (\"ruby@2.7.2\" ,ruby-2.7).".
   (interactive
    (let ((default (thing-at-point 'symbol))
          (package-string
