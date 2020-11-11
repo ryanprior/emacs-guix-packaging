@@ -171,7 +171,7 @@
   "Insert ARGS into the `guix-packaging-output-buffer'."
   (with-current-buffer (get-buffer-create guix-packaging-output-buffer)
     (save-excursion
-      (end-of-buffer)
+      (goto-char (point-max))
       (-each args #'insert)
       (insert "\n"))))
 
@@ -194,6 +194,12 @@ slug suitable as a bland Lisp or scheme symbol."
        ,init
      ,current))
 
+(defun guix-packaging--goto-line (n &optional buffer)
+  "Go to the Nth line."
+  (with-current-buffer (or buffer (current-buffer))
+    (goto-char (point-min))
+    (forward-line (1- n))))
+
 (defun guix-packaging--do-on-each-line (func &optional start end)
   "Run a command on each line.
 Move point to each line between START and END (or current
@@ -204,7 +210,7 @@ selected region) and run FUNC each time."
                                      (region-end)))))
     (save-mark-and-excursion
       (set-mark nil)
-      (goto-line start)
+      (guix-packaging--goto-line start)
       (while (<= (line-number-at-pos) end)
         (funcall func)
         (forward-line)))))
@@ -273,7 +279,7 @@ selected region) and run FUNC each time."
       (with-current-buffer (get-buffer-create "*pkg*")
         (erase-buffer)
         (insert-file-contents file-path)
-        (goto-line line (current-buffer))
+        (guix-packaging--goto-line line (current-buffer))
         (search-backward "define-public")
         (end-of-line)
         (scheme-mode)
@@ -292,10 +298,9 @@ selected region) and run FUNC each time."
 ;;;###autoload
 (defun guix-packaging-insert-input (package-string)
   "Insert the corresponding Guix package input for PACKAGE-STRING.
-eg. for ruby@2.7.2 insert (\"ruby@2.7.2\" ,ruby-2.7).".
+eg. for ruby@2.7.2 insert (\"ruby@2.7.2\" ,ruby-2.7)."
   (interactive
-   (let ((default (thing-at-point 'symbol))
-         (package-string
+   (let ((package-string
           (completing-read "Search packages: "
                            (completion-table-dynamic
                             (lambda (query)
@@ -321,8 +326,8 @@ and use the go module requirement as the label."
     (fixup-whitespace)
     (forward-char)
     (search-forward " ")
-    (delete-backward-char 1)
-    (delete-forward-char 1)
+    (delete-char -1)
+    (delete-char 1)
     (insert "@")))
 
 (defun guix-packaging--go-mod-region-to-checkboxes (&optional depth)
@@ -333,11 +338,11 @@ Prepend 2 times DEPTH spaces before each list element."
      "Convert to checkbox with given DEPTH and BUFFER."
      (guix-packaging-go-mod-to-checkbox depth))))
 
-(defun guix-packaging--mark-go-mod (&optional buffer)
+(defun guix-packaging--mark-go-mod ()
   "Mark go module requirements.
-Use the current region in BUFFER or look around point in the
-current buffer. Use `guix-packaging-go-mod-pattern' to identify
-target lines."
+Use the current region or look around point in the current
+buffer. Use `guix-packaging-go-mod-pattern' to identify target
+lines."
   (let ((start (line-number-at-pos (if (use-region-p)
                                        (region-beginning)
                                      (point))))
@@ -345,24 +350,22 @@ target lines."
         (in-mod-region (save-mark-and-excursion
                          (beginning-of-line)
                          (looking-at-p guix-packaging-go-mod-pattern)))
-        (max-point (buffer-size))
-        (buffer (or buffer
-                    (current-buffer))))
+        (max-point (buffer-size)))
     (when in-mod-region
       (beginning-of-line)
       (while (and (not (eq (point) 1))
                   (looking-at-p guix-packaging-go-mod-pattern))
-        (previous-line))
+        (forward-line -1))
       (when (not (looking-at-p guix-packaging-go-mod-pattern))
         (forward-line))
       (setq region-min-line-number (line-number-at-pos))
       (push-mark (point) t t)
-      (goto-line start)
+      (guix-packaging--goto-line start)
       (while (and (not (eq (point) max-point))
                   (looking-at-p guix-packaging-go-mod-pattern))
         (forward-line))
       (when (not (looking-at-p guix-packaging-go-mod-pattern))
-        (previous-line))
+        (forward-line -1))
       (end-of-line)
       `(,region-min-line-number ,(line-number-at-pos)))))
 
@@ -376,17 +379,17 @@ mod block at point."
   (if (use-region-p)
       (guix-packaging--go-mod-region-to-checkboxes depth)
     (destructuring-bind (&optional start end)
-        (guix-packaging--mark-go-mod buffer)
+        (guix-packaging--mark-go-mod)
       (when (and start end)
         (with-current-buffer (or buffer (current-buffer))
           (save-mark-and-excursion
             (guix-packaging--go-mod-region-to-checkboxes depth)
-            (goto-line (- start 1))
+            (guix-packaging--goto-line (- start 1))
             (beginning-of-line)
             (when (looking-at-p guix-packaging-go-mod-start-pattern)
               (delete-region (point)
                              (1+ (line-end-position))))
-            (goto-line (1+ end))
+            (guix-packaging--goto-line (1+ end))
             (beginning-of-line)
             (when (looking-at-p guix-packaging-go-mod-end-pattern)
               (delete-region (point)
@@ -436,7 +439,7 @@ If BRANCH provided, git uses that branch (or tag.)"
            string-trim-right
            kill-new
            message)
-    (when (called-interactively-p)
+    (when (called-interactively-p 'interactive)
       (message "Couldn't hash %s at branch %s. See %s for info."
                (propertize repo-url 'face 'link)
                branch
