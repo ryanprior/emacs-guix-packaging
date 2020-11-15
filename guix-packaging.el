@@ -344,11 +344,9 @@ eg. for ruby@2.7.2 insert (\"ruby@2.7.2\" ,ruby-2.7)."
   (interactive
    (let ((package-string
           (completing-read "Search packages: "
-                           (completion-table-dynamic
-                            (lambda (query)
-                              "Get names of packages that match STRING."
-                              (map 'list #'guix-packaging--make-package-string
-                                   (guix-packaging--list-available query)))))))
+                           (cl-map 'list (-rpartial #'plist-get :name)
+                                  (or guix-packaging--all-guix-packages
+                                      (guix-packaging-refresh-packages))))))
      (list package-string)))
   (insert (guix-packaging--format-input package-string)))
 
