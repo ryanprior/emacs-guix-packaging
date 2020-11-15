@@ -229,6 +229,13 @@ selected region) and run FUNC each time."
     (error "No go mod here"))
   (point))
 
+(defun thing-at-point--bounds-of-go-mod-at-point ()
+  "Get boundaries of go mod declaration at point."
+  (save-excursion
+    (let* ((beg (thing-at-point--beginning-of-go-mod))
+           (end (thing-at-point--end-of-go-mod)))
+      (cons beg end))))
+
 (defun guix-packaging--tsv-to-plist (tsv-string)
   "Transform a TSV-STRING for a package into a plist."
   (let* ((fields (split-string tsv-string "\t"))
