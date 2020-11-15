@@ -228,7 +228,7 @@ selected region) and run FUNC each time."
 
 (defun guix-packaging--map-tsv-to-plist (package-strings)
   "Transform tsv PACKAGE-STRINGS to plists."
-  (map 'list #'guix-packaging--tsv-to-plist package-strings))
+  (cl-map 'list #'guix-packaging--tsv-to-plist package-strings))
 
 (defun guix-packaging--list-available (search-regex)
   "Available packages in Guix matching SEARCH-REGEX, in a plist."
@@ -241,17 +241,17 @@ selected region) and run FUNC each time."
 (defun guix-packaging--add-rec-field (plist pair)
   "Add record PAIR to PLIST."
   (plist-put plist
-             (intern (concat ":" (first pair)))
-             (second pair)))
+             (intern (concat ":" (cl-first pair)))
+             (cl-second pair)))
 
 (defun guix-packaging--rec-to-plist (rec-string)
   "Transfrom a REC-STRING for a package into a plist."
   (let* ((reduced-string (replace-regexp-in-string "\n[+]" " " rec-string))
          (fields (--> reduced-string
                       (split-string it "\n")
-                      (remove-if #'string-empty-p it)
+                      (cl-remove-if #'string-empty-p it)
                       (map 'list (-rpartial #'split-string ": ") it)
-                      (reduce #'guix-packaging--add-rec-field
+                      (cl-reduce #'guix-packaging--add-rec-field
                               it
                               :initial-value '())))
          (dependencies (split-string (plist-get fields :dependencies))))
@@ -378,7 +378,7 @@ mod block at point."
   (interactive "p")
   (if (use-region-p)
       (guix-packaging--go-mod-region-to-checkboxes depth)
-    (destructuring-bind (&optional start end)
+    (cl-destructuring-bind (&optional start end)
         (guix-packaging--mark-go-mod)
       (when (and start end)
         (with-current-buffer (or buffer (current-buffer))
