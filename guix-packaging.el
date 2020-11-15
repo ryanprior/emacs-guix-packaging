@@ -168,6 +168,9 @@
                            (buffer-file-name)))
   "Directory where guix-packaging snippets reside.")
 
+(defvar guix-packaging--all-guix-packages nil
+  "List containing all packages in the local Guix.")
+
 (defun guix-packaging--message (&rest args)
   "Insert ARGS into the `guix-packaging-output-buffer'."
   (with-current-buffer (get-buffer-create guix-packaging-output-buffer)
