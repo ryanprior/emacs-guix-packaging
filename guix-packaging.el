@@ -222,6 +222,13 @@ selected region) and run FUNC each time."
     (error "No go mod here"))
   (point))
 
+(defun thing-at-point--end-of-go-mod ()
+  "Go to the end of a go mod declaration."
+  (goto-char (line-end-position))
+  (unless (looking-back guix-packaging-go-mod-pattern)
+    (error "No go mod here"))
+  (point))
+
 (defun guix-packaging--tsv-to-plist (tsv-string)
   "Transform a TSV-STRING for a package into a plist."
   (let* ((fields (split-string tsv-string "\t"))
