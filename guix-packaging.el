@@ -263,7 +263,7 @@ selected region) and run FUNC each time."
 
 (defun guix-packaging--map-tsv-to-plist (package-strings)
   "Transform tsv PACKAGE-STRINGS to plists."
-  (cl-map 'list #'guix-packaging--tsv-to-plist package-strings))
+  (cl-map #'list #'guix-packaging--tsv-to-plist package-strings))
 
 (defun guix-packaging--list-available (&optional search-regex)
   "Available packages in Guix matching SEARCH-REGEX, in a plist."
@@ -292,7 +292,7 @@ selected region) and run FUNC each time."
          (fields (--> reduced-string
                       (split-string it "\n")
                       (cl-remove-if #'string-empty-p it)
-                      (map 'list (-rpartial #'split-string ": ") it)
+                      (cl-map #'list (-rpartial #'split-string ": ") it)
                       (cl-reduce #'guix-packaging--add-rec-field
                               it
                               :initial-value '())))
@@ -344,7 +344,7 @@ eg. for ruby@2.7.2 insert (\"ruby@2.7.2\" ,ruby-2.7)."
   (interactive
    (let ((package-string
           (completing-read "Search packages: "
-                           (cl-map 'list (-rpartial #'plist-get :name)
+                           (cl-map #'list (-rpartial #'plist-get :name)
                                   (or guix-packaging--all-guix-packages
                                       (guix-packaging-refresh-packages))))))
      (list package-string)))
