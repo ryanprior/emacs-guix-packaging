@@ -273,6 +273,13 @@ selected region) and run FUNC each time."
       (split-string "\n" t)
       guix-packaging--map-tsv-to-plist))
 
+;;;###autoload
+(defun guix-packaging-refresh-packages ()
+  "Refresh the list of available Guix packages."
+  (interactive)
+  (setq guix-packaging--all-guix-packages
+        (guix-packaging--list-available)))
+
 (defun guix-packaging--add-rec-field (plist pair)
   "Add record PAIR to PLIST."
   (plist-put plist
