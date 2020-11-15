@@ -265,10 +265,10 @@ selected region) and run FUNC each time."
   "Transform tsv PACKAGE-STRINGS to plists."
   (cl-map 'list #'guix-packaging--tsv-to-plist package-strings))
 
-(defun guix-packaging--list-available (search-regex)
+(defun guix-packaging--list-available (&optional search-regex)
   "Available packages in Guix matching SEARCH-REGEX, in a plist."
   (-> "%s package -A %s"
-      (format guix-packaging-guix-executable search-regex)
+      (format guix-packaging-guix-executable (or search-regex ""))
       shell-command-to-string
       (split-string "\n" t)
       guix-packaging--map-tsv-to-plist))
