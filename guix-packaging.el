@@ -236,6 +236,11 @@ selected region) and run FUNC each time."
            (end (thing-at-point--end-of-go-mod)))
       (cons beg end))))
 
+(defun thing-at-point-go-mod-at-point ()
+  "Get go mod declaration at point."
+  (let ((bounds (bounds-of-thing-at-point 'go-mod)))
+    (buffer-substring (car bounds) (cdr bounds))))
+
 (defun guix-packaging--tsv-to-plist (tsv-string)
   "Transform a TSV-STRING for a package into a plist."
   (let* ((fields (split-string tsv-string "\t"))
