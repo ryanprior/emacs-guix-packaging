@@ -215,6 +215,13 @@ selected region) and run FUNC each time."
         (funcall func)
         (forward-line)))))
 
+(defun thing-at-point--beginning-of-go-mod ()
+  "Go to the beginning of a go mod declaration."
+  (goto-char (line-beginning-position))
+  (unless (looking-at-p guix-packaging-go-mod-pattern)
+    (error "No go mod here"))
+  (point))
+
 (defun guix-packaging--tsv-to-plist (tsv-string)
   "Transform a TSV-STRING for a package into a plist."
   (let* ((fields (split-string tsv-string "\t"))
