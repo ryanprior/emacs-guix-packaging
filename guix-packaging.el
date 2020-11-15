@@ -6,7 +6,7 @@
 ;; Keywords: guix tools snippets
 ;; Version: 1.0
 ;; Homepage: https://github.com/ryanprior/emacs-guix-packaging
-;; Package-Requires: ((emacs "27.1") (dash "2.17.0") (yasnippet "0.14.0"))
+;; Package-Requires: ((emacs "27.1") (dash "2.17.0") (dash-functional "1.2.0") (yasnippet "0.14.0"))
 
 ;; This file is not part of GNU Emacs.
 
@@ -91,6 +91,7 @@
 
 (require 'cl-lib)
 (require 'dash)
+(require 'dash-functional)
 (require 'files)
 (require 'rx)
 (require 'simple)
