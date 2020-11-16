@@ -295,11 +295,14 @@ selected region) and run FUNC each time."
   (setq guix-packaging--all-guix-packages
         (guix-packaging--list-available)))
 
-(defun guix-packaging--add-rec-field (plist pair)
-  "Add record PAIR to PLIST."
-  (plist-put plist
-             (intern (concat ":" (cl-first pair)))
-             (cl-second pair)))
+(defun guix-packaging--pairs-to-plist (pairs &optional plist)
+  "Add record PAIRS to PLIST."
+  (cl-reduce (lambda (plist pair) "Add PAIR to PLIST."
+              (plist-put plist
+                         (intern (concat ":" (cl-first pair)))
+                         (cl-second pair)))
+            pairs
+            :initial-value plist))
 
 (defun guix-packaging--rec-to-plist (rec-string)
   "Transfrom a REC-STRING for a package into a plist."
