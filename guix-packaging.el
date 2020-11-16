@@ -185,6 +185,17 @@
       (-each args #'insert)
       (insert "\n"))))
 
+(defun guix-packaging--invoke-guix (cmd &rest args)
+  (let ((load-strings (cl-map #'list (-partial #'format "-L \"%s\"") guix-packaging-extra-load-paths))
+        (cmd (if args
+                 cmd
+               (cl-first (split-string cmd))))
+        (args (or args (cl-rest (split-string cmd)))))
+    (thread-first (list guix-packaging-guix-executable cmd load-strings args)
+      flatten-list
+      (string-join " ")
+      shell-command-to-string)))
+
 (defun guix-packaging--make-slug (string)
   "Make a slug out of STRING.
 Replaces whitespaces, dots, slashes & underscores in STRING with
