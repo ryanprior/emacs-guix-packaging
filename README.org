@@ -25,6 +25,8 @@ Replace a single go module definition with a checkbox.
 **** ~M-x~ ~guix-packaging-refresh-packages~
 Refresh the cache of information about available Guix packages.
 
+-----
+
 *** Snippets
 
 **** scheme mode
@@ -41,6 +43,8 @@ skeleton suitable for those modules which don't have any releases.
 The ~guix-badge~ snippet inserts the HTML for a Repology badge showing the
 package status in Guix and linking to the project page in Repology, handy for
 project status pages.
+
+-----
 
 *** Configuration
 
@@ -59,6 +63,8 @@ Add extra Guile load paths to Guix commands that support them by putting them in
 **** Snippets
 Set ~guix-packaging-slug-dash-pattern~ to control which characters will get
 replaced with dashes when making a slug to use as a Guile symbol.
+
+-----
 
 *** Vision
 
