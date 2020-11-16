@@ -201,12 +201,12 @@
 Replaces whitespaces, dots, slashes & underscores in STRING with
 dashes and removes other non-alphanumeric characters to make a
 slug suitable as a bland Lisp or scheme symbol."
-  (->> string
-       downcase
-       (replace-regexp-in-string (rx (+ (regexp guix-packaging-slug-dash-pattern)))
-                                 "-")
-       (replace-regexp-in-string (rx (not (any alphanumeric "-")))
-                                 "")))
+  (thread-last string
+    downcase
+    (replace-regexp-in-string (rx (+ (regexp guix-packaging-slug-dash-pattern)))
+                              "-")
+    (replace-regexp-in-string (rx (not (any alphanumeric "-")))
+                              "")))
 
 (defmacro guix-packaging--latch (current init)
   "CURRENT unless it's nil or an empty string, in which case INIT."
@@ -284,11 +284,9 @@ selected region) and run FUNC each time."
 
 (defun guix-packaging--list-available (&optional search-regex)
   "Available packages in Guix matching SEARCH-REGEX, in a plist."
-  (-> "%s package -A %s"
-      (format guix-packaging-guix-executable (or search-regex ""))
-      shell-command-to-string
-      (split-string "\n" t)
-      guix-packaging--map-tsv-to-plist))
+  (thread-first (guix-packaging--invoke-guix "package" "-A" (or search-regex ""))
+    (split-string "\n" t)
+    guix-packaging--map-tsv-to-plist))
 
 ;;;###autoload
 (defun guix-packaging-refresh-packages ()
@@ -326,14 +324,13 @@ selected region) and run FUNC each time."
 
 (defun guix-packaging--guile-symbol (package-string)
   "The Guile symbol for PACKAGE-STRING."
-  (let* ((package-location (->> package-string
-                               (format "VISUAL=echo %s edit %s" guix-packaging-guix-executable)
-                               shell-command-to-string))
+  (let* ((guix-packaging-guix-executable (concat "VISUAL=echo "guix-packaging-guix-executable)))
+         (package-location (guix-packaging--invoke-guix "edit" package-string))
          (data-pair (split-string package-location))
-         (line (-> data-pair
-                   first
-                   (string-trim "+")
-                   string-to-number))
+         (line (thread-first data-pair
+                 cl-first
+                 (string-trim "+")
+                 string-to-number))
          (file-path (second data-pair)))
       (with-current-buffer (get-buffer-create "*pkg*")
         (erase-buffer)
@@ -375,10 +372,10 @@ and use the go module requirement as the label."
   (interactive "p")
   (save-excursion
     (goto-char (line-beginning-position))
-    (insert (-> depth
-                (or 1)
-                (* 2)
-                (make-string ? )))
+    (insert (thread-first depth
+              (or 1)
+              (* 2)
+              (make-string ? )))
     (insert "- [ ]")
     (fixup-whitespace)
     (forward-char)
@@ -489,13 +486,14 @@ If BRANCH provided, git uses that branch (or tag.)"
                                nil nil "master")))
      (list repo-url branch)))
   (if (zerop (guix-packaging--git-clone-tmp repo-url branch))
-      (->> repo-url
-           guix-packaging--tmp-repo-dir
-           (format "%s hash -rx %s" guix-packaging-guix-executable)
-           shell-command-to-string
-           string-trim-right
-           kill-new
-           message)
+      (thread-last repo-url
+        guix-packaging--tmp-repo-dir
+        (guix-packaging--invoke-guix "hash")
+        (format "%s hash -rx %s" guix-packaging-guix-executable)
+        shell-command-to-string
+        string-trim-right
+        kill-new
+        message)
     (when (called-interactively-p 'interactive)
       (message "Couldn't hash %s at branch %s. See %s for info."
                (propertize repo-url 'face 'link)
