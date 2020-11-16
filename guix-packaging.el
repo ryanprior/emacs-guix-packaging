@@ -332,14 +332,13 @@ selected region) and run FUNC each time."
                  (string-trim "+")
                  string-to-number))
          (file-path (second data-pair)))
-      (with-current-buffer (get-buffer-create "*pkg*")
-        (erase-buffer)
+      (with-temp-buffer
         (insert-file-contents file-path)
-        (guix-packaging--goto-line line (current-buffer))
-        (search-backward "define-public")
-        (end-of-line)
         (scheme-mode)
-        (thing-at-point 'symbol t))))
+        (guix-packaging--goto-line line (current-buffer))
+        (beginning-of-thing 'defun)
+        (goto-char (line-end-position))
+        (thing-at-point 'symbol t)))
 
 (defun guix-packaging--format-input (package-string)
   "Format PACKAGE-STRING as a Guix package input."
