@@ -311,12 +311,15 @@ selected region) and run FUNC each time."
                    (cl-map #'list (-rpartial #'split-string ": "))
                    guix-packaging--pairs-to-plist))
          (dependencies (split-string (plist-get fields :dependencies))))
-(defun guix-packaging--package (name)
-  "Info about the package NAME in a plist."
-  (--> "%s show %s"
-       (format it guix-packaging-guix-executable name)
-       shell-command-to-string
-       guix-packaging--rec-to-plist))
+    (plist-put fields :dependencies dependencies)))
+
+(defun guix-packaging--package (name &optional extra)
+  "Info about the package NAME in a plist.
+If EXTRA is non-nil, fetch extra package info using `guix
+search'."
+  (if extra
+      (guix-packaging--rec-to-plist (guix-packaging--invoke-guix "show" name))
+    (seq-find (-rpartial #'plist-get :name) guix-packaging--all-guix-packages)))
 
 (defun guix-packaging--guile-symbol (package-string)
   "The Guile symbol for PACKAGE-STRING."
