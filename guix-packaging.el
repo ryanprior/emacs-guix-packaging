@@ -306,18 +306,11 @@ selected region) and run FUNC each time."
 
 (defun guix-packaging--rec-to-plist (rec-string)
   "Transfrom a REC-STRING for a package into a plist."
-  (let* ((reduced-string (replace-regexp-in-string "\n[+]" " " rec-string))
-         (fields (--> reduced-string
-                      (split-string it "\n")
-                      (cl-remove-if #'string-empty-p it)
-                      (cl-map #'list (-rpartial #'split-string ": ") it)
-                      (cl-reduce #'guix-packaging--add-rec-field
-                              it
-                              :initial-value '())))
+  (let* ((reduced-string (replace-regexp-in-string (rx "\n" "+") " " rec-string))
+         (fields (thread-last (split-string reduced-string "\n" t)
+                   (cl-map #'list (-rpartial #'split-string ": "))
+                   guix-packaging--pairs-to-plist))
          (dependencies (split-string (plist-get fields :dependencies))))
-    (plist-put fields :dependencies
-               dependencies)))
-
 (defun guix-packaging--package (name)
   "Info about the package NAME in a plist."
   (--> "%s show %s"
