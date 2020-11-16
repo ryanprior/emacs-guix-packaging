@@ -4,7 +4,7 @@
 
 ;; Author: Ryan Prior <rprior@protonmail.com>
 ;; Keywords: guix tools snippets
-;; Version: 1.0
+;; Version: 1.1
 ;; Homepage: https://github.com/ryanprior/emacs-guix-packaging
 ;; Package-Requires: ((emacs "27.1") (dash "2.17.0") (dash-functional "1.2.0") (yasnippet "0.14.0") (seq "2.22"))
 
@@ -60,6 +60,11 @@
 ;; ─────────────────────────────────────────
 
 ;;   Replace a single go module definition with a checkbox.
+
+;; `M-x' `guix-packaging-refresh-packages'
+;; ───────────────────────────────────────
+
+;;   Refresh the cache of information about available Guix packages.
 
 
 ;; Snippets
@@ -133,7 +138,7 @@
   :type '(regexp)
   :group 'guix-packaging)
 
-(defcustom guix-packaging-go-mod-pattern
+(defconst guix-packaging-go-mod-pattern
   (rx line-start
       (* space)
       (+ (not space))
@@ -143,11 +148,9 @@
       (+ (not space))
       (* not-newline)
       line-end)
-  "Pattern matching a single go module requirement."
-  :type '(regexp)
-  :group 'guix-packaging)
+  "Pattern matching a single go module requirement.")
 
-(defcustom guix-packaging-go-mod-start-pattern
+(defconst guix-packaging-go-mod-start-pattern
   (rx line-start
       (* space)
       "require"
@@ -155,19 +158,15 @@
       "("
       (* space)
       line-end)
-  "Pattern matching the beginning of a go module requirement block."
-  :type '(regexp)
-  :group 'guix-packaging)
+  "Pattern matching the beginning of a go module requirement block.")
 
-(defcustom guix-packaging-go-mod-end-pattern
+(defconst guix-packaging-go-mod-end-pattern
   (rx line-start
       (* space)
       ")"
       (* space)
       line-end)
-  "Pattern matching the end of a go module requirement block."
-  :type '(regexp)
-  :group 'guix-packaging)
+  "Pattern matching the end of a go module requirement block.")
 
 (defconst guix-packaging--snippets-root
   (file-name-directory (or load-file-name

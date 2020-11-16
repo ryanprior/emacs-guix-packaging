@@ -22,6 +22,9 @@ track of packaging progress.
 **** ~M-x~ ~guix-packaging-go-mod-to-checkbox~
 Replace a single go module definition with a checkbox.
 
+**** ~M-x~ ~guix-packaging-refresh-packages~
+Refresh the cache of information about available Guix packages.
+
 *** Snippets
 
 **** scheme mode
@@ -38,6 +41,24 @@ skeleton suitable for those modules which don't have any releases.
 The ~guix-badge~ snippet inserts the HTML for a Repology badge showing the
 package status in Guix and linking to the project page in Repology, handy for
 project status pages.
+
+*** Configuration
+
+**** Output & error buffers
+Set ~guix-packaging-output-buffer~ to control where status messages are sent,
+and ~guix-packaging-error-buffer~ for error messages. These can be the same if
+you prefer them interleaved. (Default: ~*guix-packaging*~)
+
+**** Guix
+Set ~guix-packaging-guix-executable~ to specify which executable file should be
+used to invoke Guix commands. (Default: =~/.config/guix/current/bin/guix=)
+
+Add extra Guile load paths to Guix commands that support them by putting them in
+~guix-packaging-extra-load-paths~.
+
+**** Snippets
+Set ~guix-packaging-slug-dash-pattern~ to control which characters will get
+replaced with dashes when making a slug to use as a Guile symbol.
 
 *** Vision
 
