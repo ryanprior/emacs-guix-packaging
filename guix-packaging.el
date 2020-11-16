@@ -123,6 +123,11 @@
   :type '((file :must-match t))
   :group 'guix-packaging)
 
+(defcustom guix-packaging-extra-load-paths nil
+  "Extra directories to add to the Guile load path when invoking Guix."
+  :type '(repeat directory)
+  :group 'guix-packaging)
+
 (defcustom guix-packaging-slug-dash-pattern (rx (any " " "_" "/" "."))
   "Pattern matching characters to replace with dashes in a slug."
   :type '(regexp)
