@@ -320,27 +320,33 @@ search'."
       (guix-packaging--rec-to-plist (guix-packaging--invoke-guix "show" name))
     (seq-find (-rpartial #'plist-get :name) guix-packaging--all-guix-packages)))
 
-(defun guix-packaging--guile-symbol (package-string)
-  "The Guile symbol for PACKAGE-STRING."
-  (let* ((guix-packaging-guix-executable (concat "VISUAL=echo "guix-packaging-guix-executable)))
-         (package-location (guix-packaging--invoke-guix "edit" package-string))
-         (data-pair (split-string package-location))
-         (line (thread-first data-pair
-                 cl-first
-                 (string-trim "+")
-                 string-to-number))
-         (file-path (second data-pair)))
-      (with-temp-buffer
-        (insert-file-contents file-path)
-        (scheme-mode)
-        (guix-packaging--goto-line line (current-buffer))
-        (beginning-of-thing 'defun)
-        (goto-char (line-end-position))
-        (thing-at-point 'symbol t)))
-
 (defun guix-packaging--format-input (package-string)
   "Format PACKAGE-STRING as a Guix package input."
   (format "(\"%s\" ,%s)" package-string (guix-packaging--guile-symbol package-string)))
+(defun guix-packaging--guile-symbols (&rest package-strings)
+  "The Guile symbol for PACKAGE-STRINGS."
+  (let* ((guix-packaging-guix-executable (concat "VISUAL=echo "guix-packaging-guix-executable))
+         (package-locations (thread-last (apply #'guix-packaging--invoke-guix "edit" package-strings)
+                              split-string
+                              (-partition 2))))
+    (-zip-pair
+     package-strings
+     (cl-map 'list (lambda (data-pair)
+                    "Guile symbol for PACKAGE-STRING."
+                    (let ((line (thread-first data-pair
+                                  cl-first
+                                  (string-trim "+")
+                                  string-to-number))
+                          (file-path (cl-second data-pair)))
+                      (with-temp-buffer
+                        (insert-file-contents file-path)
+                        (scheme-mode)
+                        (guix-packaging--goto-line line (current-buffer))
+                        (beginning-of-thing 'defun)
+                        (goto-char (line-end-position))
+                        (thing-at-point 'symbol t))))
+            package-locations))))
+
 
 (defun guix-packaging--make-package-string (package)
   "The package-string (name@version) for PACKAGE."
