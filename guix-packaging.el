@@ -4,7 +4,7 @@
 
 ;; Author: Ryan Prior <rprior@protonmail.com>
 ;; Keywords: guix tools snippets
-;; Version: 1.1
+;; Version: 1.2
 ;; Homepage: https://github.com/ryanprior/emacs-guix-packaging
 ;; Package-Requires: ((emacs "27.1") (dash "2.17.0") (dash-functional "1.2.0") (yasnippet "0.14.0") (seq "2.22"))
 
@@ -35,11 +35,12 @@
 ;; `M-x' `guix-packaging-insert-input'
 ;; ───────────────────────────────────
 
-;;   Prompts for a package string with completion, for example
+;;   Prompts for a set of package strings with completion, for example
 ;;   `ruby@2.7.2', and inserts the corresponding Guix input form such as
-;;   `("ruby@2.7.2" ,ruby-2.7)'. It reads the Guile source code to find the
-;;   appropriate symbol name, so it might not work with some packages that
-;;   have unusual source code.
+;;   `("ruby@2.7.2" ,ruby-2.7)'.
+
+;;   Reads the Guile source code to find the appropriate symbol name, so it
+;;   might not work with some packages that have unusual source code.
 
 
 ;; `M-x' `guix-packaging-hash-git'

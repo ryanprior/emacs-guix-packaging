@@ -6,9 +6,11 @@ Guix packages quickly and with confidence.
 *** Commands
 
 **** ~M-x~ ~guix-packaging-insert-input~
-Prompts for a package string with completion, for example ~ruby@2.7.2~, and
-inserts the corresponding Guix input form such as ~("ruby@2.7.2" ,ruby-2.7)~. It
-reads the Guile source code to find the appropriate symbol name, so it might not
+Prompts for a set of package strings with completion, for example ~ruby@2.7.2~,
+and inserts the corresponding Guix input form such as ~("ruby@2.7.2"
+,ruby-2.7)~.
+
+Reads the Guile source code to find the appropriate symbol name, so it might not
 work with some packages that have unusual source code.
 
 **** ~M-x~ ~guix-packaging-hash-git~
