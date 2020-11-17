@@ -261,10 +261,10 @@ selected region) and run FUNC each time."
   (let ((bounds (bounds-of-thing-at-point 'go-mod)))
     (buffer-substring (car bounds) (cdr bounds))))
 
-(put 'go-mod #'beginning-op #'thing-at-point--beginning-of-go-mod)
-(put 'go-mod #'end-op #'thing-at-point--end-of-go-mod)
-(put 'go-mod #'bounds-of-thing-at-point #'thing-at-point--bounds-of-go-mod-at-point)
-(put 'go-mod #'thing-at-point #'thing-at-point-go-mod-at-point)
+(put 'go-mod 'beginning-op #'thing-at-point--beginning-of-go-mod)
+(put 'go-mod 'end-op #'thing-at-point--end-of-go-mod)
+(put 'go-mod 'bounds-of-thing-at-point #'thing-at-point--bounds-of-go-mod-at-point)
+(put 'go-mod 'thing-at-point #'thing-at-point-go-mod-at-point)
 
 (defun guix-packaging--tsv-to-plist (tsv-string)
   "Transform a TSV-STRING for a package into a plist."
