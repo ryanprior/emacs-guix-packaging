@@ -322,28 +322,31 @@ search'."
     (seq-find (-rpartial #'plist-get :name) guix-packaging--all-guix-packages)))
 
 (defun guix-packaging--guile-symbols (&rest package-strings)
-  "The Guile symbol for PACKAGE-STRINGS."
+  "Hash of PACKAGE-STRINGS to their corresponding Guile symbols."
   (let* ((guix-packaging-guix-executable (concat "VISUAL=echo "guix-packaging-guix-executable))
          (package-locations (thread-last (apply #'guix-packaging--invoke-guix "edit" package-strings)
                               split-string
                               (-partition 2))))
-    (-zip-pair
-     package-strings
-     (cl-map 'list (lambda (data-pair)
-                    "Guile symbol for PACKAGE-STRING."
-                    (let ((line (thread-first data-pair
-                                  cl-first
-                                  (string-trim "+")
-                                  string-to-number))
-                          (file-path (cl-second data-pair)))
-                      (with-temp-buffer
-                        (insert-file-contents file-path)
-                        (scheme-mode)
-                        (guix-packaging--goto-line line (current-buffer))
-                        (beginning-of-thing 'defun)
-                        (goto-char (line-end-position))
-                        (thing-at-point 'symbol t))))
-            package-locations))))
+    (cl-reduce
+     (lambda (hash next)
+       "Add Guile symbol NEXT data pair to HASH."
+       (let* ((package-string (cl-first next))
+              (data-pair (cl-rest next))
+              (line (thread-first data-pair
+                      cl-first
+                      (string-trim "+")
+                      string-to-number))
+              (file-path (cl-second data-pair)))
+         (with-temp-buffer
+           (insert-file-contents file-path)
+           (scheme-mode)
+           (guix-packaging--goto-line line (current-buffer))
+           (beginning-of-thing 'defun)
+           (goto-char (line-end-position))
+           (puthash package-string (thing-at-point 'symbol t) hash)
+           hash)))
+     (-zip package-strings package-locations)
+     :initial-value (make-hash-table))))
 
 (defun guix-packaging--format-inputs (&rest package-strings)
   "Format PACKAGE-STRINGS as Guix package inputs."
@@ -353,7 +356,7 @@ search'."
                     "Format PACKAGE-STRING as a Guix package input."
                     (format "(\"%s\" ,%s)"
                             package-string
-                            (alist-get package-string guile-symbols)))
+                            (gethash package-string guile-symbols)))
            package-strings)))
 
 (defun guix-packaging--make-package-string (package)
