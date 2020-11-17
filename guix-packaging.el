@@ -362,17 +362,18 @@ search'."
           (plist-get package :version)))
 
 ;;;###autoload
-(defun guix-packaging-insert-input (package-string)
-  "Insert the corresponding Guix package input for PACKAGE-STRING.
+(defun guix-packaging-insert-input (&rest package-strings)
+  "Insert the corresponding Guix package inputs for PACKAGE-STRINGS.
 eg. for ruby@2.7.2 insert (\"ruby@2.7.2\" ,ruby-2.7)."
   (interactive
-   (let ((package-string
-          (completing-read "Search packages: "
-                           (cl-map #'list (-rpartial #'plist-get :name)
-                                  (or guix-packaging--all-guix-packages
-                                      (guix-packaging-refresh-packages))))))
-     (list package-string)))
-  (insert (guix-packaging--format-input package-string)))
+   (completing-read-multiple
+    "Search packages: "
+    (cl-map #'list #'guix-packaging--make-package-string
+           (or guix-packaging--all-guix-packages
+               (guix-packaging-refresh-packages)))))
+  (dolist (input (apply #'guix-packaging--format-inputs package-strings))
+     (insert input)
+     (newline-and-indent)))
 
 ;;;###autoload
 (defun guix-packaging-go-mod-to-checkbox (&optional depth)
