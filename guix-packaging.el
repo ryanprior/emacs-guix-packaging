@@ -245,7 +245,7 @@ selected region) and run FUNC each time."
 (defun thing-at-point--end-of-go-mod ()
   "Go to the end of a go mod declaration."
   (goto-char (line-end-position))
-  (unless (looking-back guix-packaging-go-mod-pattern)
+  (unless (looking-back guix-packaging-go-mod-pattern (line-beginning-position))
     (error "No go mod here"))
   (point))
 
