@@ -320,9 +320,6 @@ search'."
       (guix-packaging--rec-to-plist (guix-packaging--invoke-guix "show" name))
     (seq-find (-rpartial #'plist-get :name) guix-packaging--all-guix-packages)))
 
-(defun guix-packaging--format-input (package-string)
-  "Format PACKAGE-STRING as a Guix package input."
-  (format "(\"%s\" ,%s)" package-string (guix-packaging--guile-symbol package-string)))
 (defun guix-packaging--guile-symbols (&rest package-strings)
   "The Guile symbol for PACKAGE-STRINGS."
   (let* ((guix-packaging-guix-executable (concat "VISUAL=echo "guix-packaging-guix-executable))
@@ -347,6 +344,16 @@ search'."
                         (thing-at-point 'symbol t))))
             package-locations))))
 
+(defun guix-packaging--format-inputs (&rest package-strings)
+  "Format PACKAGE-STRINGS as Guix package inputs."
+  (let ((guile-symbols (apply #'guix-packaging--guile-symbols package-strings)))
+    (cl-map #'list
+           (lambda (package-string)
+                    "Format PACKAGE-STRING as a Guix package input."
+                    (format "(\"%s\" ,%s)"
+                            package-string
+                            (alist-get package-string guile-symbols)))
+           package-strings)))
 
 (defun guix-packaging--make-package-string (package)
   "The package-string (name@version) for PACKAGE."
