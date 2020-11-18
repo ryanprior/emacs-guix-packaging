@@ -511,9 +511,7 @@ If BRANCH provided, git uses that branch (or tag.)"
   (if (zerop (guix-packaging--git-clone-tmp repo-url branch))
       (thread-last repo-url
         guix-packaging--tmp-repo-dir
-        (guix-packaging--invoke-guix "hash")
-        (format "%s hash -rx %s" guix-packaging-guix-executable)
-        shell-command-to-string
+        (guix-packaging--invoke-guix "hash" "-rx")
         string-trim-right
         kill-new
         message)
