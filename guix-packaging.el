@@ -4,7 +4,7 @@
 
 ;; Author: Ryan Prior <rprior@protonmail.com>
 ;; Keywords: guix tools snippets
-;; Version: 1.2
+;; Version: 1.3
 ;; Homepage: https://github.com/ryanprior/emacs-guix-packaging
 ;; Package-Requires: ((emacs "27.1") (dash "2.17.0") (dash-functional "1.2.0") (yasnippet "0.14.0") (seq "2.22"))
 
