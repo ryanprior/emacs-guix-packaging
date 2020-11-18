@@ -187,6 +187,8 @@
       (newline)
       msg)))
 
+(defconst guix-packaging--no-load-path-commands
+  '("hash"))
 
 (defun guix-packaging--invoke-guix (cmd &rest args)
   (let ((load-strings (cl-map #'list (-partial #'format "-L \"%s\"") guix-packaging-extra-load-paths))
