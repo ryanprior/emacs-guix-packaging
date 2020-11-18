@@ -483,7 +483,7 @@ mod block at point."
          (branch-options (when branch
                            (format "--branch \"%s\" " branch)))
          (dest (guix-packaging--tmp-repo-dir repo-url))
-         (cmd (format "git clone --depth=1 %s%s %s"
+         (cmd (format "git clone -q --depth=1 %s%s %s"
                       branch-options
                       repo-url
                       dest)))
