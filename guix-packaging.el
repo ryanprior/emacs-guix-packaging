@@ -201,6 +201,7 @@
                     (list guix-packaging-guix-executable cmd load-strings args))
       flatten-list
       (string-join " ")
+      (guix-packaging--message :prefix "$ ")
       shell-command-to-string)))
 
 (defun guix-packaging--make-slug (string)
