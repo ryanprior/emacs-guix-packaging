@@ -177,13 +177,16 @@
 (defvar guix-packaging--all-guix-packages nil
   "List containing all packages in the local Guix.")
 
-(defun guix-packaging--message (&rest args)
-  "Insert ARGS into the `guix-packaging-output-buffer'."
+(cl-defun guix-packaging--message (msg &key prefix)
+  "Insert MSG into the `guix-packaging-output-buffer', optionally preceeded by PREFIX."
   (with-current-buffer (get-buffer-create guix-packaging-output-buffer)
     (save-excursion
       (goto-char (point-max))
-      (-each args #'insert)
-      (insert "\n"))))
+      (when prefix (insert prefix))
+      (insert msg)
+      (newline)
+      msg)))
+
 
 (defun guix-packaging--invoke-guix (cmd &rest args)
   (let ((load-strings (cl-map #'list (-partial #'format "-L \"%s\"") guix-packaging-extra-load-paths))
@@ -480,9 +483,9 @@ mod block at point."
                       repo-url
                       dest)))
     (when (file-directory-p dest)
-      (guix-packaging--message "Removing existing " dest)
+      (guix-packaging--message (format "Removing existing %s" dest))
       (delete-directory dest t))
-    (guix-packaging--message "$ " cmd)
+    (guix-packaging--message cmd :prefix "$ ")
     (shell-command cmd guix-packaging-output-buffer
                    guix-packaging-error-buffer)))
 
