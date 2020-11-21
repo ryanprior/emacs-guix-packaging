@@ -202,6 +202,7 @@
       flatten-list
       (string-join " ")
       (guix-packaging--message :prefix "$ ")
+      (concat " 2>/dev/null")
       shell-command-to-string)))
 
 (defun guix-packaging--make-slug (string)
