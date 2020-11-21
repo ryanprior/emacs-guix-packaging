@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Guix Issue Link
+# key: guix-issue-url
+# --
+https://issues.guix.gnu.org/$1

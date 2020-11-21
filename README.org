@@ -46,6 +46,9 @@ The ~guix-badge~ snippet inserts the HTML for a Repology badge showing the
 package status in Guix and linking to the project page in Repology, handy for
 project status pages.
 
+**** text mode
+The ~guix-issue-url~ snippet inserts a URL pointing to the Guix issue tracker.
+
 -----
 
 *** Configuration
