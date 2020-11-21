@@ -401,6 +401,7 @@ and use the go module requirement as the label."
               (* 2)
               (make-string ? )))
     (insert "- [ ]")
+    (org-cycle-list-bullet (mod depth 3))
     (fixup-whitespace)
     (forward-char)
     (search-forward " ")
