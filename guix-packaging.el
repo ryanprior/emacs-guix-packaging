@@ -4,7 +4,7 @@
 
 ;; Author: Ryan Prior <rprior@protonmail.com>
 ;; Keywords: guix tools snippets
-;; Version: 1.4
+;; Version: 1.5
 ;; Homepage: https://github.com/ryanprior/emacs-guix-packaging
 ;; Package-Requires: ((emacs "27.1") (dash "2.17.0") (dash-functional "1.2.0") (yasnippet "0.14.0") (seq "2.22"))
 
@@ -46,8 +46,13 @@
 ;; `M-x' `guix-packaging-hash-git'
 ;; ───────────────────────────────
 
-;;   Saves the Guix hash to the kill ring for a git repository URL (the one
-;;   at point by default) at a given tag.
+;;   Saves the Guix hash to the kill ring for a git repository URL at a
+;;   given tag.
+
+;;   Reads your mind to get the default URL: prefers the URL at point,
+;;   falls back to the URL following `(url "' in the `defun' at point, or
+;;   as a last resort, uses the next match in the buffer for
+;;   `goto-address-url-regexp'.
 
 
 ;; `M-x' `guix-packaging-go-mod-to-checklist-dwim'
@@ -92,6 +97,14 @@
 ;;   The `guix-badge' snippet inserts the HTML for a Repology badge showing
 ;;   the package status in Guix and linking to the project page in
 ;;   Repology, handy for project status pages.
+
+
+;; text mode
+;; ─────────
+
+;;   The `guix-issue-url' snippet inserts a URL pointing to the Guix issue
+;;   tracker.
+
 
 ;;; Code:
 
