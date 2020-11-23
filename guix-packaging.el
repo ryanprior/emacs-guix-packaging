@@ -496,6 +496,22 @@ mod block at point."
     (shell-command cmd guix-packaging-output-buffer
                    guix-packaging-error-buffer)))
 
+(defun guix-packaging--url-read-my-mind ()
+  "The URL around point, or the first URL of the defun at point, if any."
+  (save-excursion
+    (or (thing-at-point 'url)
+       (-when-let* ((fn (bounds-of-thing-at-point 'defun))
+                    (beginning (car fn))
+                    (end (cdr fn)))
+           (goto-char beginning)
+           (search-forward-regexp
+            (rx "(url" (* space) "\"")
+            end)
+           (thing-at-point 'url))
+       (progn
+         (search-forward-regexp goto-address-url-regexp)
+         (thing-at-point 'url)))))
+
 ;;;###autoload
 (defun guix-packaging-hash-git (&optional repo-url branch)
   "Save the hash of the git repository at REPO-URL to the kill ring.
