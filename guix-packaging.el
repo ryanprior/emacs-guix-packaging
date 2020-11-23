@@ -517,7 +517,7 @@ mod block at point."
   "Save the hash of the git repository at REPO-URL to the kill ring.
 If BRANCH provided, git uses that branch (or tag.)"
   (interactive
-   (let* ((default (thing-at-point 'url))
+   (let* ((default (guix-packaging--url-read-my-mind))
           (repo-url (read-string (concat "Repository URL"
                                          (when default
                                            (concat " (default " default ")"))
