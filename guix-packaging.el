@@ -105,6 +105,7 @@
 ;;   The `guix-issue-url' snippet inserts a URL pointing to the Guix issue
 ;;   tracker.
 
+
 
 ;;; Code:
 
@@ -203,6 +204,8 @@
 (defconst guix-packaging--no-load-path-commands
   '("hash"))
 
+
+
 (defun guix-packaging--invoke-guix (cmd &rest args)
   (let ((load-strings (cl-map #'list (-partial #'format "-L \"%s\"") guix-packaging-extra-load-paths))
         (cmd (if args
@@ -258,6 +261,8 @@ selected region) and run FUNC each time."
         (funcall func)
         (forward-line)))))
 
+
+
 (defun thing-at-point--beginning-of-go-mod ()
   "Go to the beginning of a go mod declaration."
   (goto-char (line-beginning-position))
@@ -289,6 +294,8 @@ selected region) and run FUNC each time."
 (put 'go-mod 'bounds-of-thing-at-point #'thing-at-point--bounds-of-go-mod-at-point)
 (put 'go-mod 'thing-at-point #'thing-at-point-go-mod-at-point)
 
+
+
 (defun guix-packaging--tsv-to-plist (tsv-string)
   "Transform a TSV-STRING for a package into a plist."
   (let* ((fields (split-string tsv-string "\t"))
@@ -304,22 +311,10 @@ selected region) and run FUNC each time."
   "Transform tsv PACKAGE-STRINGS to plists."
   (cl-map #'list #'guix-packaging--tsv-to-plist package-strings))
 
-(defun guix-packaging--list-available (&optional search-regex)
-  "Available packages in Guix matching SEARCH-REGEX, in a plist."
-  (thread-first (guix-packaging--invoke-guix "package" "-A" (or search-regex ""))
-    (split-string "\n" t)
-    guix-packaging--map-tsv-to-plist))
-
-;;;###autoload
-(defun guix-packaging-refresh-packages ()
-  "Refresh the list of available Guix packages."
-  (interactive)
-  (setq guix-packaging--all-guix-packages
-        (guix-packaging--list-available)))
-
 (defun guix-packaging--pairs-to-plist (pairs &optional plist)
   "Add record PAIRS to PLIST."
-  (cl-reduce (lambda (plist pair) "Add PAIR to PLIST."
+  (cl-reduce (lambda (plist pair)
+              "Add PAIR to PLIST."
               (plist-put plist
                          (intern (concat ":" (cl-first pair)))
                          (cl-second pair)))
@@ -334,14 +329,6 @@ selected region) and run FUNC each time."
                    guix-packaging--pairs-to-plist))
          (dependencies (split-string (plist-get fields :dependencies))))
     (plist-put fields :dependencies dependencies)))
-
-(defun guix-packaging--package (name &optional extra)
-  "Info about the package NAME in a plist.
-If EXTRA is non-nil, fetch extra package info using `guix
-search'."
-  (if extra
-      (guix-packaging--rec-to-plist (guix-packaging--invoke-guix "show" name))
-    (seq-find (-rpartial #'plist-get :name) guix-packaging--all-guix-packages)))
 
 (defun guix-packaging--guile-symbols (&rest package-strings)
   "Hash of PACKAGE-STRINGS to their corresponding Guile symbols."
@@ -370,15 +357,38 @@ search'."
      (-zip package-strings package-locations)
      :initial-value (make-hash-table))))
 
+
+
+(defun guix-packaging--list-available (&optional search-regex)
+  "Available packages in Guix matching SEARCH-REGEX, in a plist."
+  (thread-first (guix-packaging--invoke-guix "package" "-A" (or search-regex ""))
+    (split-string "\n" t)
+    guix-packaging--map-tsv-to-plist))
+
+;;;###autoload
+(defun guix-packaging-refresh-packages ()
+  "Refresh the list of available Guix packages."
+  (interactive)
+  (setq guix-packaging--all-guix-packages
+        (guix-packaging--list-available)))
+
+(defun guix-packaging--package (name &optional extra)
+  "Info about the package NAME in a plist.
+If EXTRA is non-nil, fetch extra package info using `guix
+search'."
+  (if extra
+      (guix-packaging--rec-to-plist (guix-packaging--invoke-guix "show" name))
+    (seq-find (-rpartial #'plist-get :name) guix-packaging--all-guix-packages)))
+
 (defun guix-packaging--format-inputs (&rest package-strings)
   "Format PACKAGE-STRINGS as Guix package inputs."
   (let ((guile-symbols (apply #'guix-packaging--guile-symbols package-strings)))
     (cl-map #'list
            (lambda (package-string)
-                    "Format PACKAGE-STRING as a Guix package input."
-                    (format "(\"%s\" ,%s)"
-                            package-string
-                            (gethash package-string guile-symbols)))
+             "Format PACKAGE-STRING as a Guix package input."
+             (format "(\"%s\" ,%s)"
+                     package-string
+                     (gethash package-string guile-symbols)))
            package-strings)))
 
 (defun guix-packaging--make-package-string (package)
@@ -398,8 +408,8 @@ eg. for ruby@2.7.2 insert (\"ruby@2.7.2\" ,ruby-2.7)."
            (or guix-packaging--all-guix-packages
                (guix-packaging-refresh-packages)))))
   (dolist (input (apply #'guix-packaging--format-inputs package-strings))
-     (insert input)
-     (newline-and-indent)))
+    (insert input)
+    (newline-and-indent)))
 
 ;;;###autoload
 (defun guix-packaging-go-mod-to-checkbox (&optional depth)
@@ -513,17 +523,17 @@ mod block at point."
   "The URL around point, or the first URL of the defun at point, if any."
   (save-excursion
     (or (thing-at-point 'url)
-       (-when-let* ((fn (bounds-of-thing-at-point 'defun))
-                    (beginning (car fn))
-                    (end (cdr fn)))
-           (goto-char beginning)
-           (search-forward-regexp
-            (rx "(url" (* space) "\"")
-            end)
-           (thing-at-point 'url))
-       (progn
-         (search-forward-regexp goto-address-url-regexp)
-         (thing-at-point 'url)))))
+        (-when-let* ((fn (bounds-of-thing-at-point 'defun))
+                     (beginning (car fn))
+                     (end (cdr fn)))
+          (goto-char beginning)
+          (search-forward-regexp
+           (rx "(url" (* space) "\"")
+           end)
+          (thing-at-point 'url))
+        (progn
+          (search-forward-regexp goto-address-url-regexp)
+          (thing-at-point 'url)))))
 
 ;;;###autoload
 (defun guix-packaging-hash-git (&optional repo-url branch)
@@ -554,6 +564,8 @@ If BRANCH provided, git uses that branch (or tag.)"
                            'error)))
     nil))
 
+
+
 ;;;###autoload
 (defun guix-packaging--snippets-initialize ()
   "Initialize yasnippet to use the guix-packaging snippets."
@@ -567,5 +579,7 @@ If BRANCH provided, git uses that branch (or tag.)"
   (guix-packaging--snippets-initialize))
 
 (provide 'guix-packaging)
+
+
 
 ;;; guix-packaging.el ends here
