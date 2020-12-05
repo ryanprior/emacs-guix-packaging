@@ -357,6 +357,25 @@ selected region) and run FUNC each time."
      (-zip package-strings package-locations)
      :initial-value (make-hash-table))))
 
+(defun guix-packaging--package-sexps ()
+  "Top-level package sexps of the defun at point, as a list."
+    (let ((defun-end (progn
+                       (end-of-defun)
+                       (1- (line-number-at-pos))))
+          (result (make-hash-table)))
+      (beginning-of-defun)
+      (search-forward "(package")
+      (while (< (line-number-at-pos) defun-end)
+        (forward-sexp)
+        (let* ((body (thing-at-point 'sexp t))
+               (name (with-temp-buffer
+                       (insert body)
+                       (goto-char (point-min))
+                       (forward-word)
+                       (word-at-point))))
+          (puthash (intern (concat ":" name)) body result)))
+      result))
+
 
 
 (defun guix-packaging--list-available (&optional search-regex)
