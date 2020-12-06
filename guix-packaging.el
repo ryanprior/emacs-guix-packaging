@@ -392,6 +392,24 @@ selected region) and run FUNC each time."
           (puthash (intern (concat ":" name)) body result)))
       result))
 
+(defun guix-packaging--assemble-package (name parts strategy)
+  "Assemble a package definition from NAME and PARTS.
+If STRATEGY is a plist with :sections corresponding to a list of
+  symbols, sections of the package will appear in the specififed
+  order."
+  (let* ((all-keys (hash-table-keys parts))
+         (part-keys (plist-get strategy :parts))
+         (strategized-keys (-intersection part-keys all-keys))
+         (unknown-keys (-difference part-keys strategized-keys))
+         (other-keys (-difference all-keys part-keys))
+         (sections (cl-map #'list (-rpartial #'gethash parts)
+                          (append strategized-keys unknown-keys other-keys))))
+    (guix-packaging--with-scheme-buffer
+      (insert (format "(define-public %s\n  (package\n    %s))"
+                      name
+                      (mapconcat #'identity sections "\n    ")))
+      (buffer-string))))
+
 
 
 (defun guix-packaging--list-available (&optional search-regex)
