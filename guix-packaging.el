@@ -261,6 +261,15 @@ selected region) and run FUNC each time."
         (funcall func)
         (forward-line)))))
 
+(defmacro guix-packaging--with-scheme-buffer (&rest body)
+  "Evaluate BODY using a temporary scheme-mode buffer."
+  (declare (indent 0))
+  `(let ((geiser-mode-auto-p nil))
+     (with-temp-buffer
+       (font-lock-mode -1)
+       (scheme-mode)
+       ,@body)))
+
 
 
 (defun thing-at-point--beginning-of-go-mod ()
