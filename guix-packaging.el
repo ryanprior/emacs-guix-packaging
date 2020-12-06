@@ -362,19 +362,16 @@ selected region) and run FUNC each time."
                       (string-trim "+")
                       string-to-number))
               (file-path (cl-second data-pair)))
-         (with-temp-buffer
+         (guix-packaging--with-scheme-buffer
            (insert-file-contents file-path)
-           (scheme-mode)
            (guix-packaging--goto-line line (current-buffer))
-           (beginning-of-thing 'defun)
-           (goto-char (line-end-position))
-           (puthash package-string (thing-at-point 'symbol t) hash)
+           (puthash package-string (guix-packaging--defun-symbol) hash)
            hash)))
      (-zip package-strings package-locations)
      :initial-value (make-hash-table))))
 
 (defun guix-packaging--package-sexps ()
-  "Top-level package sexps of the defun at point, as a list."
+  "Top-level package sexps of the defun at point, as a hash."
     (let ((defun-end (progn
                        (end-of-defun)
                        (1- (line-number-at-pos))))
@@ -384,12 +381,12 @@ selected region) and run FUNC each time."
       (while (< (line-number-at-pos) defun-end)
         (forward-sexp)
         (let* ((body (thing-at-point 'sexp t))
-               (name (with-temp-buffer
+               (name (guix-packaging--with-scheme-buffer
                        (insert body)
                        (goto-char (point-min))
-                       (forward-word)
-                       (word-at-point))))
-          (puthash (intern (concat ":" name)) body result)))
+                       (forward-symbol 1)
+                       (symbol-at-point))))
+          (puthash (intern (format ":%s" name)) body result)))
       result))
 
 (defun guix-packaging--assemble-package (name parts strategy)
