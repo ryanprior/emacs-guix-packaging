@@ -339,6 +339,13 @@ selected region) and run FUNC each time."
          (dependencies (split-string (plist-get fields :dependencies))))
     (plist-put fields :dependencies dependencies)))
 
+(defun guix-packaging--defun-symbol ()
+  "Symbol that names the current defun."
+  (save-excursion
+    (beginning-of-thing 'defun)
+    (goto-char (line-end-position))
+    (thing-at-point 'symbol t)))
+
 (defun guix-packaging--guile-symbols (&rest package-strings)
   "Hash of PACKAGE-STRINGS to their corresponding Guile symbols."
   (let* ((guix-packaging-guix-executable (concat "VISUAL=echo "guix-packaging-guix-executable))
