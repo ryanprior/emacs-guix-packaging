@@ -373,36 +373,40 @@ selected region) and run FUNC each time."
      (-zip package-strings package-locations)
      :initial-value (make-hash-table))))
 
-(defun guix-packaging--package-sexps ()
-  "Top-level package sexps of the defun at point, as a hash."
+(defun guix-packaging--disassemble-package ()
+  "Disassemble the package in the defun at point."
     (let ((defun-end (progn
                        (end-of-defun)
                        (1- (line-number-at-pos))))
-          (result (make-hash-table)))
+          (result `(:symex ,(make-hash-table) :strategy (:parts nil))))
       (beginning-of-defun)
       (search-forward "(package")
       (while (< (line-number-at-pos) defun-end)
         (forward-sexp)
-        (let* ((body (thing-at-point 'sexp t))
-               (name (guix-packaging--with-scheme-buffer
-                       (insert body)
-                       (goto-char (point-min))
-                       (forward-symbol 1)
-                       (symbol-at-point))))
-          (puthash (intern (format ":%s" name)) body result)))
+        (-let* ((body (thing-at-point 'sexp t))
+                (name (guix-packaging--with-scheme-buffer
+                        (insert body)
+                        (goto-char (point-min))
+                        (forward-symbol 1)
+                        (symbol-at-point)))
+                (name-symbol (intern (format ":%s" name)))
+                ((&plist :strategy (&plist :parts)) result))
+          (push name-symbol (plist-get (plist-get result :strategy) :parts))
+          (puthash name-symbol body (plist-get result :symex))))
+      (cl-callf reverse (plist-get (plist-get result :strategy) :parts))
       result))
 
-(defun guix-packaging--assemble-package (name parts strategy)
-  "Assemble a package definition from NAME and PARTS.
+(defun guix-packaging--assemble-package (name symex strategy)
+  "Assemble a package definition from NAME and SYMEX.
 If STRATEGY is a plist with :sections corresponding to a list of
   symbols, sections of the package will appear in the specififed
   order."
-  (let* ((all-keys (hash-table-keys parts))
+  (let* ((all-keys (hash-table-keys symex))
          (part-keys (plist-get strategy :parts))
          (strategized-keys (-intersection part-keys all-keys))
          (unknown-keys (-difference part-keys strategized-keys))
          (other-keys (-difference all-keys part-keys))
-         (sections (cl-map #'list (-rpartial #'gethash parts)
+         (sections (cl-map #'list (-rpartial #'gethash symex)
                           (append strategized-keys unknown-keys other-keys))))
     (guix-packaging--with-scheme-buffer
       (insert (format "(define-public %s\n  (package\n    %s))"
