@@ -119,6 +119,9 @@
 (require 'subr-x)
 (require 'thingatpt)
 (require 'yasnippet)
+(require 'gv)
+
+(gv-define-simple-setter plist-get plist-put)
 
 (defgroup guix nil "Interface for the GNU Guix package manager."
   :prefix "guix-"
