@@ -396,6 +396,21 @@ selected region) and run FUNC each time."
       (cl-callf reverse (plist-get (plist-get result :strategy) :parts))
       result))
 
+(defun guix-packaging--rename-section (section name)
+  "Rename SECTION by replacing its first symbol with NAME.
+If NAME is nil, don't do anything."
+  (if (null name)
+      section
+    (guix-packaging--with-scheme-buffer
+      (insert section)
+      (goto-char (point-min))
+      (forward-symbol 1)
+      (cl-destructuring-bind (start . end) (bounds-of-thing-at-point 'symbol)
+        (goto-char start)
+        (delete-forward-char (- end start)))
+      (insert name)
+      (buffer-string))))
+
 (defun guix-packaging--assemble-package (name symex strategy)
   "Assemble a package definition from NAME and SYMEX.
 If STRATEGY is a plist with :sections corresponding to a list of
