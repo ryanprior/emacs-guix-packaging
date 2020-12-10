@@ -388,7 +388,7 @@ selected region) and run FUNC each time."
                         (insert body)
                         (goto-char (point-min))
                         (forward-symbol 1)
-                        (symbol-at-point)))
+                        (thing-at-point 'symbol t)))
                 (name-symbol (intern (format ":%s" name)))
                 ((&plist :strategy (&plist :parts)) result))
           (push name-symbol (plist-get (plist-get result :strategy) :parts))
