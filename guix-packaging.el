@@ -411,6 +411,14 @@ If NAME is nil, don't do anything."
       (insert name)
       (buffer-string))))
 
+(defun guix-packaging--alias-reverse (aliases)
+  "Transform ALIASES such that they represent the reverse substitutions.
+For example, '(:greeting \"hello\" :name \"world\")
+becomes:     '(:hello \"greeting\" :world \"name\")"
+  (cl-loop for (key val) on aliases by #'cddr
+          collect (intern (format ":%s" val))
+          collect (string-trim (format "%s" key) ":" "")))
+
 (defun guix-packaging--assemble-package (name symex strategy)
   "Assemble a package definition from NAME and SYMEX.
 If STRATEGY is a plist with :sections corresponding to a list of
