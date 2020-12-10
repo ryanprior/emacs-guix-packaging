@@ -429,7 +429,12 @@ If STRATEGY is a plist with :sections corresponding to a list of
          (strategized-keys (-intersection part-keys all-keys))
          (unknown-keys (-difference part-keys strategized-keys))
          (other-keys (-difference all-keys part-keys))
-         (sections (cl-map #'list (-rpartial #'gethash symex)
+         (aliases (plist-get strategy :aliases))
+         (sections (cl-map
+                    #'list
+                    (lambda (part)
+                      "Fetch PART from symex hash and maybe rename it."
+                      (thread-first part (gethash symex) (guix-packaging--rename-section (plist-get aliases part))))
                           (append strategized-keys unknown-keys other-keys))))
     (guix-packaging--with-scheme-buffer
       (insert (format "(define-public %s\n  (package\n    %s))"
