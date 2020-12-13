@@ -191,8 +191,21 @@
                            (buffer-file-name)))
   "Directory where guix-packaging snippets reside.")
 
+(defconst guix-packaging--data-dir
+  (concat user-emacs-directory "/var/guix-packaging/")
+  "Directory for saving Guix package related data.")
+(mkdir guix-packaging--data-dir t)
+
+(defvar guix-packaging--strategies (make-hash-table)
+  "Hash containing known strategies for Guix packages.")
+
+(defconst guix-packaging--no-load-path-commands
+  '("hash"))
+
 (defvar guix-packaging--all-guix-packages nil
   "List containing all packages in the local Guix.")
+
+
 
 (cl-defun guix-packaging--message (msg &key prefix)
   "Insert MSG into the `guix-packaging-output-buffer', optionally preceeded by PREFIX."
@@ -203,11 +216,6 @@
       (insert msg)
       (newline)
       msg)))
-
-(defconst guix-packaging--no-load-path-commands
-  '("hash"))
-
-
 
 (defun guix-packaging--invoke-guix (cmd &rest args)
   (let ((load-strings (cl-map #'list (-partial #'format "-L \"%s\"") guix-packaging-extra-load-paths))
