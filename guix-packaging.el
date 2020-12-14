@@ -387,10 +387,11 @@ selected region) and run FUNC each time."
 
 (defun guix-packaging--disassemble-package ()
   "Disassemble the package in the defun at point."
+  (save-excursion
     (let ((defun-end (progn
                        (end-of-defun)
                        (1- (line-number-at-pos))))
-          (result `(:symex ,(make-hash-table) :strategy (:parts nil))))
+          (result `(:symbol ,(guix-packaging--defun-symbol) :symex ,(make-hash-table) :strategy (:parts nil))))
       (beginning-of-defun)
       (search-forward "(package")
       (while (< (line-number-at-pos) defun-end)
@@ -406,7 +407,7 @@ selected region) and run FUNC each time."
           (push name-symbol (plist-get (plist-get result :strategy) :parts))
           (puthash name-symbol body (plist-get result :symex))))
       (cl-callf reverse (plist-get (plist-get result :strategy) :parts))
-      result))
+      result)))
 
 (defun guix-packaging--rename-section (section name)
   "Rename SECTION by replacing its first symbol with NAME.
