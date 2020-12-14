@@ -462,12 +462,11 @@ If STRATEGY is a plist with :sections corresponding to a list of
     (prin1 guix-packaging--strategies (current-buffer))
     (write-file (concat guix-packaging--data-dir "/strategies.hash"))))
 
-(cl-defun guix-packaging--remember-strategy (&optional (tag :default))
-  "Save the strategy for the package at point, tagging it with TAG."
-  (let* ((package (guix-packaging--disassemble-package))
-         (symbol (plist-get package :symbol))
+(cl-defun guix-packaging--remember-strategy (package &optional (tag :default))
+  "Save the strategy for PACKAGE, tagging it with TAG."
+  (let* ((symbol (plist-get package :symbol))
          (strategy (plist-get package :strategy)))
-    (puthash (vector symbol tag) strategy guix-packaging--strategies)
+    (puthash (vector symbol tag) strategy guix-packaging--strategies)))
     (cl-destructuring-bind (begin . end) (bounds-of-thing-at-point 'defun)
       (guix-packaging--pulse-region begin end))
     (when guix-packaging--save-after-remember (guix-packaging--persist-strategies))))
