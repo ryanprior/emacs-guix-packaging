@@ -197,7 +197,7 @@
   "Directory for saving Guix package related data.")
 (mkdir guix-packaging--data-dir t)
 
-(defvar guix-packaging--strategies (make-hash-table)
+(defvar guix-packaging--strategies (make-hash-table :test #'equal)
   "Hash containing known strategies for Guix packages.")
 (defvar guix-packaging--save-after-remember t)
 
