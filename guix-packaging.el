@@ -280,6 +280,11 @@ selected region) and run FUNC each time."
        (scheme-mode)
        ,@body)))
 
+(defun guix-packaging--pulse-region (start end)
+  (when (pulse-available-p)
+    (pulse-momentary-highlight-region start end)))
+
+
 
 
 (defun thing-at-point--beginning-of-go-mod ()
