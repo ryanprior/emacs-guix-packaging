@@ -219,12 +219,11 @@
       (newline)
       msg)))
 
-(defun guix-packaging--invoke-guix (cmd &rest args)
+(cl-defun guix-packaging--invoke-guix (cmd &rest (args (cl-rest (split-string cmd))))
   (let ((load-strings (cl-map #'list (-partial #'format "-L \"%s\"") guix-packaging-extra-load-paths))
         (cmd (if args
                  cmd
-               (cl-first (split-string cmd))))
-        (args (or args (cl-rest (split-string cmd)))))
+               (cl-first (split-string cmd)))))
     (thread-first (if (-contains-p guix-packaging--no-load-path-commands cmd)
                       (list guix-packaging-guix-executable cmd args)
                     (list guix-packaging-guix-executable cmd load-strings args))
@@ -253,20 +252,18 @@ slug suitable as a bland Lisp or scheme symbol."
        ,init
      ,current))
 
-(defun guix-packaging--goto-line (n &optional buffer)
+(cl-defun guix-packaging--goto-line (n &optional (buffer (current-buffer)))
   "Go to the Nth line."
-  (with-current-buffer (or buffer (current-buffer))
+  (with-current-buffer buffer
     (goto-char (point-min))
     (forward-line (1- n))))
 
-(defun guix-packaging--do-on-each-line (func &optional start end)
+(cl-defun guix-packaging--do-on-each-line (func &optional (start (region-beginning)) (end (region-end)))
   "Run a command on each line.
 Move point to each line between START and END (or current
 selected region) and run FUNC each time."
-  (let ((start (line-number-at-pos (or start
-                                       (region-beginning))))
-        (end (line-number-at-pos (or end
-                                     (region-end)))))
+  (let ((start (line-number-at-pos start))
+        (end (line-number-at-pos end)))
     (save-mark-and-excursion
       (set-mark nil)
       (guix-packaging--goto-line start)
@@ -454,9 +451,9 @@ If STRATEGY is a plist with :sections corresponding to a list of
 
 
 
-(defun guix-packaging--list-available (&optional search-regex)
+(cl-defun guix-packaging--list-available (&optional (search-regex ""))
   "Available packages in Guix matching SEARCH-REGEX, in a plist."
-  (thread-first (guix-packaging--invoke-guix "package" "-A" (or search-regex ""))
+  (thread-first (guix-packaging--invoke-guix "package" "-A" search-regex)
     (split-string "\n" t)
     guix-packaging--map-tsv-to-plist))
 
@@ -507,7 +504,7 @@ eg. for ruby@2.7.2 insert (\"ruby@2.7.2\" ,ruby-2.7)."
     (newline-and-indent)))
 
 ;;;###autoload
-(defun guix-packaging-go-mod-to-checkbox (&optional depth)
+(cl-defun guix-packaging-go-mod-to-checkbox (&optional (depth 1))
   "Convert a go module requirement to a checkbox.
 Prepend 2 times DEPTH spaces, make a list item with a checkbox,
 and use the go module requirement as the label."
@@ -515,7 +512,6 @@ and use the go module requirement as the label."
   (save-excursion
     (goto-char (line-beginning-position))
     (insert (thread-first depth
-              (or 1)
               (* 2)
               (make-string ? )))
     (insert "- [ ]")
@@ -567,7 +563,7 @@ lines."
       `(,region-min-line-number ,(line-number-at-pos)))))
 
 ;;;###autoload
-(defun guix-packaging-go-mod-to-checklist-dwim (&optional depth buffer)
+(cl-defun guix-packaging-go-mod-to-checklist-dwim (&optional depth (buffer (current-buffer)))
   "Convert the region of go module requirements to a checklist.
 Prepend 2 times DEPTH spaces before each list item. Use the
 region from BUFFER, or if no region is selected, widen to the go
@@ -578,7 +574,7 @@ mod block at point."
     (cl-destructuring-bind (&optional start end)
         (guix-packaging--mark-go-mod)
       (when (and start end)
-        (with-current-buffer (or buffer (current-buffer))
+        (with-current-buffer buffer
           (save-mark-and-excursion
             (guix-packaging--go-mod-region-to-checkboxes depth)
             (guix-packaging--goto-line (- start 1))
