@@ -473,6 +473,10 @@ If STRATEGY is a plist with :sections corresponding to a list of
       (guix-packaging--pulse-region begin end))
     (when guix-packaging--save-after-remember (guix-packaging--persist-strategies))))
 
+(cl-defun guix-packaging--get-strategy (symbol &optional (tag :default))
+  "Retrieve the remembered strategy for SYMBOL tagged with TAG, if any."
+  (gethash (vector symbol tag) guix-packaging--strategies))
+
 (cl-defun guix-packaging--list-available (&optional (search-regex ""))
   "Available packages in Guix matching SEARCH-REGEX, in a plist."
   (thread-first (guix-packaging--invoke-guix "package" "-A" search-regex)
