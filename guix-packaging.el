@@ -467,9 +467,17 @@ If STRATEGY is a plist with :sections corresponding to a list of
   (let* ((symbol (plist-get package :symbol))
          (strategy (plist-get package :strategy)))
     (puthash (vector symbol tag) strategy guix-packaging--strategies)))
+
+;;;###autoload
+(defun guix-packaging-start-transform ()
+  "Initialize transformation of the package at point."
+  (interactive)
+  (let ((package (guix-packaging--disassemble-package)))
+    (guix-packaging--remember-strategy package)
+    (when guix-packaging--save-after-remember (guix-packaging--persist-strategies))
     (cl-destructuring-bind (begin . end) (bounds-of-thing-at-point 'defun)
       (guix-packaging--pulse-region begin end))
-    (when guix-packaging--save-after-remember (guix-packaging--persist-strategies))))
+    (message "Initialized transformation of %s." (plist-get package :symbol))))
 
 (cl-defun guix-packaging--get-strategy (symbol &optional (tag :default))
   "Retrieve the remembered strategy for SYMBOL tagged with TAG, if any."
