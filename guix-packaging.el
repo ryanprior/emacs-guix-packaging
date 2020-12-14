@@ -457,6 +457,12 @@ If STRATEGY is a plist with :sections corresponding to a list of
 
 
 
+(defun guix-packaging--persist-strategies ()
+  "Persist guix-packaging--strategies to disk."
+  (with-temp-buffer
+    (prin1 guix-packaging--strategies (current-buffer))
+    (write-file (concat guix-packaging--data-dir "/strategies.hash"))))
+
 (cl-defun guix-packaging--list-available (&optional (search-regex ""))
   "Available packages in Guix matching SEARCH-REGEX, in a plist."
   (thread-first (guix-packaging--invoke-guix "package" "-A" search-regex)
