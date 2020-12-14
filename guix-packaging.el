@@ -199,6 +199,7 @@
 
 (defvar guix-packaging--strategies (make-hash-table)
   "Hash containing known strategies for Guix packages.")
+(defvar guix-packaging--save-after-remember t)
 
 (defconst guix-packaging--no-load-path-commands
   '("hash"))
