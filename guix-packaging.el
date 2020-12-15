@@ -219,11 +219,10 @@
       (newline)
       msg)))
 
-(cl-defun guix-packaging--invoke-guix (cmd &rest (args (cl-rest (split-string cmd))))
+(defun guix-packaging--invoke-guix (cmd &rest args)
   (let ((load-strings (cl-map #'list (-partial #'format "-L \"%s\"") guix-packaging-extra-load-paths))
-        (cmd (if args
-                 cmd
-               (cl-first (split-string cmd)))))
+        (cmd (cl-first (split-string cmd)))
+        (args (or args (cl-rest (split-string cmd)))))
     (thread-first (if (-contains-p guix-packaging--no-load-path-commands cmd)
                       (list guix-packaging-guix-executable cmd args)
                     (list guix-packaging-guix-executable cmd load-strings args))
