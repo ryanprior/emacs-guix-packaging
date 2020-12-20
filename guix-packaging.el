@@ -207,6 +207,19 @@
 (defvar guix-packaging--all-guix-packages nil
   "List containing all packages in the local Guix.")
 
+(defun guix-packaging--load-strategies ()
+  "Load guix-packaging--strategies from disk."
+  (let ((save-file (expand-file-name (concat guix-packaging--data-dir "/strategies.hash"))))
+    (when (file-readable-p save-file)
+      (with-temp-buffer
+        (insert-file-contents-literally save-file)
+        (goto-char (point-min))
+        (let ((data (read (current-buffer))))
+          (if (hash-table-p data)
+              (setq guix-packaging--strategies data)
+            (error "Invalid data in %s. Cannot load strategies." save-file)))))))
+(guix-packaging--load-strategies)
+
 
 
 (cl-defun guix-packaging--message (msg &key prefix)
