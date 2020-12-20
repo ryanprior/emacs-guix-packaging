@@ -431,7 +431,7 @@ If NAME is nil, don't do anything."
       (forward-symbol 1)
       (cl-destructuring-bind (start . end) (bounds-of-thing-at-point 'symbol)
         (goto-char start)
-        (delete-forward-char (- end start)))
+        (delete-char (- end start)))
       (insert name)
       (buffer-string))))
 
