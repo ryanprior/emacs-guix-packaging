@@ -480,6 +480,15 @@ If STRATEGY is a plist with :sections corresponding to a list of
          (strategy (plist-get package :strategy)))
     (puthash (vector symbol tag) strategy guix-packaging--strategies)))
 
+(cl-defun guix-packaging--interactive-tag (&key (default "default"))
+  "Prompt the user for a tag if CURRENT-PREFIX-ARG is non-nil.
+Otherwise provide DEFAULT. Return tag as a symbol."
+  (if (consp current-prefix-arg)
+      (thread-last "Tag for lens: "
+        read-from-minibuffer
+        list)
+    (list default)))
+
 ;;;###autoload
 (defun guix-packaging-start-transform ()
   "Initialize transformation of the package at point."
