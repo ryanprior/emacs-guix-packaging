@@ -474,7 +474,7 @@ If STRATEGY is a plist with :sections corresponding to a list of
     (prin1 guix-packaging--strategies (current-buffer))
     (write-file (concat guix-packaging--data-dir "/strategies.hash"))))
 
-(cl-defun guix-packaging--remember-strategy (package &optional (tag :default))
+(cl-defun guix-packaging--remember-strategy (package &optional (tag "default"))
   "Save the strategy for PACKAGE, tagging it with TAG."
   (let* ((symbol (plist-get package :symbol))
          (strategy (plist-get package :strategy)))
@@ -492,7 +492,7 @@ Otherwise provide DEFAULT. Return tag as a symbol."
 ;;;###autoload
 (defun guix-packaging-start-transform ()
   "Initialize transformation of the package at point."
-  (interactive)
+  (interactive (guix-packaging--interactive-tag :default "origin"))
   (let ((package (guix-packaging--disassemble-package)))
     (guix-packaging--remember-strategy package)
     (when guix-packaging--save-after-remember (guix-packaging--persist-strategies))
