@@ -18,11 +18,18 @@ The structural transformation capabilites of /guix-packaging.el/ are designed to
 make *option 3* super convenient by enabling you to switch package definitions
 between different structures using just a few keystrokes.
 
-Because the code lenses are content-agnostic, they affect only the structure of
-your package definitions, not their meaning. Because they're stateful,
-/guix-packaging.el/ remembers what the structure used to look like, even between
-editing sessions and even without using source control. And because they're
-reversible, you can travel from one structural state to another as often as you
-like. Put together, these properties enable you to restructure your definitions
-with confidence that you can quickly return to a previous structural state
-without affecting the meaning of the code.
+*** Definitions
+
+- Content-agnostic ::
+  A code lens is content-agnostic when it affects only the structure of a
+  package definition, not its meaning.
+- Stateful ::
+  A code lens is stateful when it remembers what the code used to look like,
+  even between editing sessions and even without using source control.
+- Reversible ::
+  A code lens is reversible when you can use it to travel from one structural
+  state to another without any restrictions or loss of information.
+
+Put together, these properties enable you to restructure your definitions with
+confidence that you can quickly return to a previous structural state without
+affecting the meaning of the code.
