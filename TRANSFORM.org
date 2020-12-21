@@ -33,3 +33,137 @@ between different structures using just a few keystrokes.
 Put together, these properties enable you to restructure your definitions with
 confidence that you can quickly return to a previous structural state without
 affecting the meaning of the code.
+
+** How to use
+
+*** Dependencies
+
+To use structural transformation you need:
+
+- GNU Guix (tested with 1.2.0 and later)
+- GNU Emacs (tested with 27 and 28)
+- guix-packaging.el (provided in this repository)
+
+#+begin_quote
+/Note:/\\
+In the future, this capability could be implemented without these dependencies,
+but because of my familiarity with using Emacs for developing experimental
+editing capabilities, it's easiest for me to develop it as an Emacs extension
+first. If you are interested in making these tools more accessible, please get
+in touch!
+#+end_quote
+
+*** Initialize (partially implemented)
+
+- Visit a file containing Guix package definitions, eg ~guix/gnu/packages/emacs-xyz.scm~
+- Invoke ~M-x~ ~guix-packaging-init-states~.
+
+  This instructs Emacs to analyze the structure of all the packages in the file,
+  saving them to a hash table for quick lookup later. It might take a while,
+  depending on how many packages there are to analyze.
+
+  The current structure of all the packages will be tagged "default" and you'll
+  refer to the initial structure by that name in the future. If you want to
+  choose a different name, invoke the command using the universal argument (~C-u~
+  ~M-x~ ~guix-packaging-init-states~) and it will prompt you for a name.
+
+  You need only use this command once for any given buffer containing package
+  definitions. After invoking it, Emacs saves the results to disk so it can load
+  them again without having to re-analyze all the code.
+
+*** Tag a new structural state (unimplemented)
+
+- Modify a package definition. For example, take the s-expression defining its
+  /home-page/ and move it up near the top of the package, right after the /name/.
+- Place point (your cursor) within the package definition.
+- Invoke ~M-x~ ~guix-packaging-tag-state~ and provide a name tag, like
+  "mine". Emacs will analyze the package at point, remember its new structure
+  and save it to disk. If you provide the name of an already-tagged structure,
+  it will prompt you to overwrite it.
+
+*** Visit another structural state (unimplemented)
+
+- Place point (your cursor) within a package definition, invoke ~M-x~
+  ~guix-packaging-visit-state~, select a tag, and press ~RET~.
+
+  With the universal argument (~C-u~) this will visit the selected state in all
+  package definitions in the current buffer for which that state is tagged.
+- To advance immediately to the next available state, instead invoke ~M-x~
+  ~guix-packaging-visit-next-state~.
+
+** State of the sotware
+
+This is experimental, pre-alpha software. The above instructions don't work yet,
+there's much to do. The instructions are provided as a roadmap for what I intend
+to implement, so I can get feedback and plan my ongoing implementation work.
+That means your feedback is very welcome!
+
+*** Implemented types of structural lenses
+
+So far, we have two types:
+
+1. Reordering sections
+
+   You can change the order of sections in a package, for example by moving the
+   /home-page/ section (usually near the bottom of a package) up near the top.
+
+   In Guix packages, most sections can be re-ordered without affecting other
+   sections. The current implementation is naive and assumes this is always
+   true. To make it robust to cases where there are dependencies, it should
+   eventually detect when the name of one section is used as a symbol in
+   another, and factor that relationship out into a let-form to preserve meaning
+   when necessary.
+
+2. Renaming sections
+
+   You can specify new names for sections. For example, if reading French is
+   more comfortable, you could change /package/ to /paquet/, and /home-page/ to
+   /page-d-accueil/.
+
+   I haven't figured out yet what UI I want to have for this. Do I provide a
+   command to rename a section? Or do I have the editor rename the section the
+   regular way, and provide a mechanism to inform Emacs about this? In that
+   case, do I try to auto-discover the relationship based on minimal content
+   edit-distance? Obviously this does not work if you rename the section and
+   overhaul the content at the same time, but maybe that's acceptable.
+
+   In addition, ideally we will have a way to inform Guix about our new symbol
+   names so that it can actually understand these packages. I think we can
+   generate a Guile scheme file creating the appropriate aliases, such that you
+   can put it on your include path and things will just work.
+
+**** Lens wishes
+   
+I would like to implement other types of lenses:
+
+- Whitespace and vertical indentation within a section would be nice to control.
+  It's not obvious to me how we do this, though. For one idea, we could
+  implement a variety of formatters that provide output that's like what is
+  currently in the Guix code-base. Then run the section through those formatters
+  and see if any of them are an exact match. If so, you save that formatter as
+  part of the style. But if there's no match, what do you do? Just treat
+  whitespace as part of the content then, I suppose? That's what we do for all
+  sections now, so falling back to that is no worse.
+- For packages that can be represented using either JSON or Guile, a lens to
+  transform between these would be cool. However, there's a few problems. How do we
+  deal with source files that contain both JSON and Guile? Do we have to split
+  the transformed packages out into their own separate file or buffer? And how
+  do we detect which packages can be so transformed without loss of information?
+- Some programmers (and the Guix style guide) prefer early-~let~, while some
+  like to use ~let~ later on. We could capture these as stylistic lenses, but
+  ensuring that they are content-agnostic and reifying the desired position of
+  the ~let~ both seem like they will take care.
+
+*** Using a parser
+
+I would like to use a parser to understand the code instead of operating on a
+literal basis like the code does now. I'm thinking about writing Guile grammar
+for ~tree-sitter~ so we can use that to understand the structure. Scheme syntax
+is famously minimal, so this might provide a big win for not a lot of effort. It
+also has the benefit of being easy to use outside of Emacs.
+
+*** Generalizing beyond package definitions
+
+This concept can be generalized beyond package definitions. How far does it make
+sense to take it? Other forms, like defuns or gexps? Other lisps, like Clojure?
+Other languages, like C and JavaScript? I'd like to eventually explore this.
