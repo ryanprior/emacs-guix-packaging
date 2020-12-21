@@ -3,6 +3,18 @@
 guix-packaging (aka "guix-packaging.el") provides tools to create and maintain
 Guix packages quickly and with confidence.
 
+*Vision:*
+#+begin_quote
+Writing and maintaining Guix packages in Emacs should be a breeze. The
+information you need should be ready at your fingertips and any chores or
+guesswork that can be reasonably automated should be. In particular, maintainers
+of Emacs packages in Guix should be able to complete the entire cycle of package
+creation, testing, installation, updates, maintenence and discovery within
+Emacs.
+#+end_quote
+
+** Creating & maintaining Guix packages
+
 *** Commands
 
 **** ~M-x~ ~guix-packaging-insert-input~
@@ -19,13 +31,6 @@ Saves the Guix hash to the kill ring for a git repository URL at a given tag.
 Reads your mind to get the default URL: prefers the URL at point, falls back to
 the URL following =(url "= in the ~defun~ at point, or as a last resort, uses
 the next match in the buffer for ~goto-address-url-regexp~.
-
-**** ~M-x~ ~guix-packaging-go-mod-to-checklist-dwim~
-Turns go module definitions into an org/markdown checklist, suitable to keep
-track of packaging progress.
-
-**** ~M-x~ ~guix-packaging-go-mod-to-checkbox~
-Replace a single go module definition with a checkbox.
 
 **** ~M-x~ ~guix-packaging-refresh-packages~
 Refresh the cache of information about available Guix packages.
@@ -74,11 +79,26 @@ replaced with dashes when making a slug to use as a Guile symbol.
 
 -----
 
-*** Vision
+*** Structural transformation
 
-Writing and maintaining Guix packages in Emacs should be a breeze. The
-information you need should be ready at your fingertips and any chores or
-guesswork that can be reasonably automated should be. In particular, maintainers
-of Emacs packages in Guix should be able to complete the entire cycle of package
-creation, testing, installation, updates, maintenence and discovery within
-Emacs.
+Structural transformation is an experimental feature. It assists you in changing
+the structure of a Guix package definition without affecting the content.
+
+It is documented in [[./TRANSFORM.org][TRANSFORM.ORG]].
+
+** Tracking packaging progress
+
+Some packages are complex due to a large number of transitive dependencies. I've
+found this to be true of software in the golang ecosystem where it's not
+uncommon to see 50+ transitive dependencies, and occasionally many more.
+
+guix-packaging provides some facilities to help track progress on complex packages.
+
+*** Commands
+
+**** ~M-x~ ~guix-packaging-go-mod-to-checklist-dwim~
+Turns go module definitions into an org/markdown checklist, suitable to keep
+track of packaging progress.
+
+**** ~M-x~ ~guix-packaging-go-mod-to-checkbox~
+Replace a single go module definition with a checkbox.
