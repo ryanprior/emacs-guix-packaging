@@ -1,0 +1,25 @@
+# -*- mode: snippet -*-
+# contributor: Ryan Prior <rprior@protonmail.com>
+# name: guix-node-package
+# key: guix-node
+# group: guix
+# --
+(define-public node-${2:$$(-> yas-text (guix-packaging--latch (yas-field-value 1)) guix-packaging--make-slug)}
+  (package
+    (name "node-$2")
+    (version "$3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://$1")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "${5:$$(guix-packaging--latch yas-text (guix-packaging-hash-git (string-append "https://" (yas-field-value 1)) (concat "v" (yas-field-value 3))))}"))))
+    (build-system node-build-system)
+    (home-page "${6:$$(guix-packaging--latch yas-text (yas-field-value 4))}")
+    (synopsis "$7")
+    (description
+     "$8")
+    (license license:${9:expat})))
