@@ -9,7 +9,7 @@ Writing and maintaining Guix packages in Emacs should be a breeze. The
 information you need should be ready at your fingertips and any chores or
 guesswork that can be reasonably automated should be. In particular, maintainers
 of Emacs packages in Guix should be able to complete the entire cycle of package
-creation, testing, installation, updates, maintenence and discovery within
+creation, testing, installation, updates, maintenance and discovery within
 Emacs.
 #+end_quote
 
