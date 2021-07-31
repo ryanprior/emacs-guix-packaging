@@ -489,8 +489,8 @@ Otherwise provide DEFAULT. Return tag as a symbol."
     (list default)))
 
 ;;;###autoload
-(defun guix-packaging-start-transform ()
-  "Initialize transformation of the package at point."
+(defun guix-packaging-init-states ()
+  "Remember structural state for packages in the current buffer."
   (interactive (guix-packaging--interactive-tag :default "origin"))
   (let ((package (guix-packaging--disassemble-package)))
     (guix-packaging--remember-strategy package)
@@ -499,7 +499,13 @@ Otherwise provide DEFAULT. Return tag as a symbol."
       (guix-packaging--pulse-region begin end))
     (message "Initialized transformation of %s." (plist-get package :symbol))))
 
-(cl-defun guix-packaging--get-strategy (symbol &optional (tag :default))
+;;;###autoload
+(defun guix-packaging-tag-state (tag)
+  "Tag the structural state of the package at point."
+  (interactive "MTag: ")
+  (message "Adding as tag: %s" tag))
+
+(cl-defun guix-packaging--get-strategy (symbol &optional (tag "default"))
   "Retrieve the remembered strategy for SYMBOL tagged with TAG, if any."
   (gethash (vector symbol tag) guix-packaging--strategies))
 
