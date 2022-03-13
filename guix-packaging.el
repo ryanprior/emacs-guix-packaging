@@ -191,7 +191,7 @@
                            (buffer-file-name)))
   "Directory where guix-packaging snippets reside.")
 
-(defconst guix-packaging--data-dir
+(defvar guix-packaging--data-dir
   (concat user-emacs-directory "/var/guix-packaging/")
   "Directory for saving Guix package related data.")
 (mkdir guix-packaging--data-dir t)
